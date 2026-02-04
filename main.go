@@ -51,10 +51,22 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// User endpoint example
+func userHandler(w http.ResponseWriter, r *http.Request) {
+	response := Response{
+		Message: "User data retrieved successfully!",
+		Status:  "success",
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func main() {
 	// Register routes
 	http.HandleFunc("/api/hello", enableCORS(helloHandler))
 	http.HandleFunc("/api/health", enableCORS(healthHandler))
+	http.HandleFunc("/api/user", enableCORS(userHandler))
 
 	// Get port from environment variable or use default
 	port := os.Getenv("PORT")
