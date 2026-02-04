@@ -42,9 +42,26 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
 // Health check endpoint
 func healthHandler(w http.ResponseWriter, r *http.Request) {
-	response := Response{
-		Message: "Backend is running!",
-		Status:  "healthy",
+	dbStatus := "disconnected"
+	dbError := ""
+
+	// Check if database is connected
+	if DB != nil {
+		err := DB.Ping()
+		if err == nil {
+			dbStatus = "connected"
+		} else {
+			dbError = err.Error()
+		}
+	}
+
+	response := map[string]interface{}{
+		"message": "Backend is running!",
+		"status":  "healthy",
+		"database": map[string]string{
+			"status": dbStatus,
+			"error":  dbError,
+		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -63,6 +80,14 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Initialize database connection
+	log.Println("Initializing database connection...")
+	if err := InitDB(); err != nil {
+		log.Printf("⚠️  Database connection failed: %v", err)
+		log.Println("Server will start without database")
+	}
+	defer CloseDB()
+
 	// Register routes
 	http.HandleFunc("/api/hello", enableCORS(helloHandler))
 	http.HandleFunc("/api/health", enableCORS(healthHandler))
