@@ -22,22 +22,34 @@ var DB *sql.DB
 
 // InitDB initializes the database connection
 func InitDB() error {
-	// Load .env file (ignore error if file doesn't exist)
-	_ = godotenv.Load()
+	// Try to load .env file, but don't fail if it doesn't exist
+	godotenv.Load() // Ignore any errors
 
-	// Get config from environment variables or use defaults
+	// Get config from environment variables
+	dbHost := getEnv("DB_HOST", "")
+	dbUser := getEnv("DB_USER", "")
+
+	// Skip database connection if no credentials provided
+	if dbHost == "" || dbUser == "" {
+		log.Println("⚠️  No database credentials found, skipping database connection")
+		return nil
+	}
+
 	config := DBConfig{
-		Host:     getEnv("DB_HOST", "localhost"),
+		Host:     dbHost,
 		Port:     getEnv("DB_PORT", "5432"),
-		User:     getEnv("DB_USER", "your_username"),
-		Password: getEnv("DB_PASSWORD", "your_password"),
-		DBName:   getEnv("DB_NAME", "your_database"),
+		User:     dbUser,
+		Password: getEnv("DB_PASSWORD", ""),
+		DBName:   getEnv("DB_NAME", "postgres"),
 	}
 
 	// Build connection string
+	// Use sslmode=require for cloud databases like NeonDB
+	// Use sslmode=disable for local/cPanel databases
+	sslMode := getEnv("DB_SSLMODE", "require")
 	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.Host, config.Port, config.User, config.Password, config.DBName,
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		config.Host, config.Port, config.User, config.Password, config.DBName, sslMode,
 	)
 
 	// Open database connection

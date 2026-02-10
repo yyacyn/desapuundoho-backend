@@ -1,47 +1,74 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
-	"net/http"
 	"os"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
-// Response structure for JSON responses
-type Response struct {
-	Message string `json:"message"`
-	Status  string `json:"status"`
-}
+func main() {
+	// Initialize database connection
+	log.Println("Initializing database connection...")
+	if err := InitDB(); err != nil {
+		log.Printf("⚠️  Database connection failed: %v", err)
+		log.Println("Server will start without database")
+	}
+	defer CloseDB()
 
-// CORS middleware to allow frontend to access backend
-func enableCORS(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	// Set Gin mode (release for production)
+	if os.Getenv("GIN_MODE") == "" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
+	// Create Gin router
+	router := gin.Default()
 
-		next(w, r)
+	// CORS middleware
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
+	// API routes
+	api := router.Group("/api")
+	{
+		api.GET("/hello", helloHandler)
+		api.GET("/health", healthHandler)
+		api.GET("/user", userHandler)
+	}
+
+	// Get port from environment variable or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+
+	// Start server
+	log.Printf("🚀 Server starting on port %s", port)
+	log.Printf("📍 Endpoints available:")
+	log.Printf("   - http://localhost:%s/api/hello", port)
+	log.Printf("   - http://localhost:%s/api/health", port)
+	log.Printf("   - http://localhost:%s/api/user", port)
+
+	if err := router.Run(":" + port); err != nil {
+		log.Fatal(err)
 	}
 }
 
-// Hello endpoint handler
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	response := Response{
-		Message: "This was a triumph",
-		Status:  "success",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+// Hello handler
+func helloHandler(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "This was a triumph",
+		"status":  "success",
+	})
 }
 
-// Health check endpoint
-func healthHandler(w http.ResponseWriter, r *http.Request) {
+// Health check handler
+func healthHandler(c *gin.Context) {
 	dbStatus := "disconnected"
 	dbError := ""
 
@@ -55,59 +82,20 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	response := map[string]interface{}{
+	c.JSON(200, gin.H{
 		"message": "Backend is running!",
 		"status":  "healthy",
-		"database": map[string]string{
+		"database": gin.H{
 			"status": dbStatus,
 			"error":  dbError,
 		},
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	})
 }
 
-// User endpoint example
-func userHandler(w http.ResponseWriter, r *http.Request) {
-	response := Response{
-		Message: "User data retrieved successfully!",
-		Status:  "success",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-}
-
-func main() {
-	// Initialize database connection
-	log.Println("Initializing database connection...")
-	if err := InitDB(); err != nil {
-		log.Printf("⚠️  Database connection failed: %v", err)
-		log.Println("Server will start without database")
-	}
-	defer CloseDB()
-
-	// Register routes
-	http.HandleFunc("/api/hello", enableCORS(helloHandler))
-	http.HandleFunc("/api/health", enableCORS(healthHandler))
-	http.HandleFunc("/api/user", enableCORS(userHandler))
-
-	// Get port from environment variable or use default
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8081" // default port
-	}
-
-	// Format port with colon
-	portWithColon := ":" + port
-
-	log.Printf("Server starting on port %s", portWithColon)
-	log.Printf("Endpoints available:")
-	log.Printf("  - http://localhost:%s/api/hello", port)
-	log.Printf("  - http://localhost:%s/api/health", port)
-
-	if err := http.ListenAndServe(portWithColon, nil); err != nil {
-		log.Fatal(err)
-	}
+// User handler example
+func userHandler(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "User data retrieved successfully!",
+		"status":  "success",
+	})
 }
