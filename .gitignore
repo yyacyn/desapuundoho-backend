@@ -9,6 +9,3 @@ server
 
 # Logs
 *.log
-
-# Go
-go.sum
