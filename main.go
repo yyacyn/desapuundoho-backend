@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,9 @@ func main() {
 		log.Println("Server will start without database")
 	}
 	defer CloseDB()
+
+	// Initialize auth (JWT secret + seed admin user)
+	initAuth()
 
 	// Set Gin mode (release for production)
 	if os.Getenv("GIN_MODE") == "" {
@@ -33,12 +37,31 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// API routes
+	// Public routes
 	api := router.Group("/api")
 	{
 		api.GET("/hello", helloHandler)
 		api.GET("/health", healthHandler)
-		api.GET("/user", userHandler)
+		api.POST("/auth/login", loginHandler)
+
+		// Public article read endpoints
+		api.GET("/articles", listArticlesHandler)
+		api.GET("/articles/:id", getArticleHandler)
+	}
+
+	// Protected routes (require JWT)
+	protected := api.Group("")
+	protected.Use(AuthMiddleware())
+	{
+		protected.GET("/auth/me", meHandler)
+
+		// Article CRUD
+		protected.POST("/articles", createArticleHandler)
+		protected.PUT("/articles/:id", updateArticleHandler)
+		protected.DELETE("/articles/:id", deleteArticleHandler)
+
+		// ImageKit auth (server-side signing for secure uploads)
+		protected.GET("/imagekit/auth", imagekitAuthHandler)
 	}
 
 	// Get port from environment variable or use default
@@ -49,10 +72,13 @@ func main() {
 
 	// Start server
 	log.Printf("🚀 Server starting on port %s", port)
-	log.Printf("📍 Endpoints available:")
-	log.Printf("   - http://localhost:%s/api/hello", port)
-	log.Printf("   - http://localhost:%s/api/health", port)
-	log.Printf("   - http://localhost:%s/api/user", port)
+	log.Printf("📍 Public endpoints:")
+	log.Printf("   - POST http://localhost:%s/api/auth/login", port)
+	log.Printf("   - GET  http://localhost:%s/api/articles", port)
+	log.Printf("📍 Protected endpoints (JWT required):")
+	log.Printf("   - GET  http://localhost:%s/api/auth/me", port)
+	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/articles", port)
+	log.Printf("   - GET  http://localhost:%s/api/imagekit/auth", port)
 
 	if err := router.Run(":" + port); err != nil {
 		log.Fatal(err)
@@ -72,7 +98,6 @@ func healthHandler(c *gin.Context) {
 	dbStatus := "disconnected"
 	dbError := ""
 
-	// Check if database is connected
 	if DB != nil {
 		err := DB.Ping()
 		if err == nil {
@@ -89,13 +114,5 @@ func healthHandler(c *gin.Context) {
 			"status": dbStatus,
 			"error":  dbError,
 		},
-	})
-}
-
-// User handler example
-func userHandler(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "User data retrieved successfully!",
-		"status":  "success",
 	})
 }
