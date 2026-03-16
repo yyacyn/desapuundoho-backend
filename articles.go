@@ -8,10 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ---------------------------------------------------------------------------
 // Data types
-// ---------------------------------------------------------------------------
-
 type Article struct {
 	ID         int    `json:"id"`
 	Title      string `json:"title"`
@@ -34,10 +31,8 @@ type ArticleInput struct {
 	Slug       string `json:"slug" binding:"required"`
 }
 
-// ---------------------------------------------------------------------------
-// Handlers
-// ---------------------------------------------------------------------------
 
+// Handlers
 // GET /api/articles
 func listArticlesHandler(c *gin.Context) {
 	if DB == nil {

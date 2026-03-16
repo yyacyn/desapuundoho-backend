@@ -33,10 +33,8 @@ func initAuth() {
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Password helpers
-// ---------------------------------------------------------------------------
 
+// Password helpers
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	return string(bytes), err
@@ -46,10 +44,8 @@ func checkPassword(hash, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
-// ---------------------------------------------------------------------------
-// JWT helpers
-// ---------------------------------------------------------------------------
 
+// JWT helpers
 type JWTClaims struct {
 	UserID   int    `json:"user_id"`
 	Username string `json:"username"`
@@ -88,10 +84,8 @@ func parseToken(tokenStr string) (*JWTClaims, error) {
 	return claims, nil
 }
 
-// ---------------------------------------------------------------------------
-// Auth middleware
-// ---------------------------------------------------------------------------
 
+// Auth middleware
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
@@ -112,10 +106,29 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// ---------------------------------------------------------------------------
-// Handlers
-// ---------------------------------------------------------------------------
+// RoleMiddleware checks if the user's role is in the list of allowed roles.
+func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole := c.GetString("role")
+		
+		isAllowed := false
+		for _, role := range allowedRoles {
+			if userRole == role {
+				isAllowed = true
+				break
+			}
+		}
 
+		if !isAllowed {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "Access denied for role: " + userRole})
+			return
+		}
+
+		c.Next()
+	}
+}
+
+// Handlers
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -169,10 +182,7 @@ func meHandler(c *gin.Context) {
 	})
 }
 
-// ---------------------------------------------------------------------------
 // ImageKit auth endpoint   (server-side signature for secure client uploads)
-// ---------------------------------------------------------------------------
-
 func imagekitAuthHandler(c *gin.Context) {
 	privateKey := os.Getenv("IMAGEKIT_PRIVATE_KEY")
 	if privateKey == "" {
@@ -195,29 +205,23 @@ func imagekitAuthHandler(c *gin.Context) {
 	})
 }
 
-// ---------------------------------------------------------------------------
-// Seed admin
-// ---------------------------------------------------------------------------
-
+// Seed admin & bendahara
 func seedAdminUser() {
-	var count int
-	err := DB.QueryRow("SELECT COUNT(*) FROM admin_users").Scan(&count)
-	if err != nil {
-		log.Printf("⚠️  Could not check admin_users table: %v", err)
-		return
-	}
-	if count > 0 {
-		return
-	}
+	hashAdmin, _ := hashPassword("admin123")
+	hashBendahara, _ := hashPassword("bendahara123")
 
-	hash, _ := hashPassword("admin123")
-	_, err = DB.Exec(
-		"INSERT INTO admin_users (username, password_hash, role) VALUES ($1, $2, $3)",
-		"admin", hash, "admin",
-	)
+	_, err := DB.Exec(`
+		INSERT INTO admin_users (username, password_hash, role) 
+		VALUES 
+			($1, $2, $3),
+			($4, $5, $6)
+		ON CONFLICT (username) DO NOTHING
+	`, "admin", hashAdmin, "admin", "bendahara", hashBendahara, "bendahara")
+	
 	if err != nil {
-		log.Printf("⚠️  Failed to seed admin user: %v", err)
+		log.Printf("⚠️  Failed to seed users: %v", err)
 		return
 	}
-	log.Println("✅ Default admin user created (admin / admin123)")
+	log.Println("✅ Default users created/verified: (admin) & (bendahara)")
 }
+

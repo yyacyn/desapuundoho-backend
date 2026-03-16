@@ -31,7 +31,7 @@ func main() {
 
 	// CORS middleware
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://127.0.0.1:5173"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -49,6 +49,10 @@ func main() {
 		// Public article read endpoints
 		api.GET("/articles", listArticlesHandler)
 		api.GET("/articles/:id", getArticleHandler)
+
+		// Public listings read endpoints
+		api.GET("/listings", listListingsHandler)
+		api.GET("/listings/:id", getListingHandler)
 	}
 
 	// Protected routes (require JWT)
@@ -57,10 +61,20 @@ func main() {
 	{
 		protected.GET("/auth/me", meHandler)
 
-		// Article CRUD
-		protected.POST("/articles", createArticleHandler)
-		protected.PUT("/articles/:id", updateArticleHandler)
-		protected.DELETE("/articles/:id", deleteArticleHandler)
+		// Admin-only routes
+		adminOnly := protected.Group("")
+		adminOnly.Use(RoleMiddleware("admin"))
+		{
+			// Articles
+			adminOnly.POST("/articles", createArticleHandler)
+			adminOnly.PUT("/articles/:id", updateArticleHandler)
+			adminOnly.DELETE("/articles/:id", deleteArticleHandler)
+
+			// Listings
+			adminOnly.POST("/listings", createListingHandler)
+			adminOnly.PUT("/listings/:id", updateListingHandler)
+			adminOnly.DELETE("/listings/:id", deleteListingHandler)
+		}
 
 		// ImageKit auth (server-side signing for secure uploads)
 		protected.GET("/imagekit/auth", imagekitAuthHandler)
@@ -77,9 +91,11 @@ func main() {
 	log.Printf("📍 Public endpoints:")
 	log.Printf("   - POST http://localhost:%s/api/auth/login", port)
 	log.Printf("   - GET  http://localhost:%s/api/articles", port)
+	log.Printf("   - GET  http://localhost:%s/api/listings", port)
 	log.Printf("📍 Protected endpoints (JWT required):")
 	log.Printf("   - GET  http://localhost:%s/api/auth/me", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/articles", port)
+	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/listings", port)
 	log.Printf("   - GET  http://localhost:%s/api/imagekit/auth", port)
 
 	if err := router.Run(":" + port); err != nil {
