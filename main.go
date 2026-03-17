@@ -32,8 +32,8 @@ func main() {
 	// CORS middleware
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "Accept", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -53,6 +53,15 @@ func main() {
 		// Public listings read endpoints
 		api.GET("/listings", listListingsHandler)
 		api.GET("/listings/:id", getListingHandler)
+
+		// Public gallery read endpoints
+		api.GET("/galeri", listGalleryHandler)
+		api.GET("/galeri/:id", getGalleryHandler)
+
+		// Public Resident Data (for graphs & village profile)
+		api.GET("/penduduk/datasets", listDatasetsHandler)
+		api.GET("/penduduk/datasets/:id/records", listPendudukByDatasetHandler)
+		api.GET("/penduduk/datasets/:id/stats", getPendudukStatsHandler)
 	}
 
 	// Protected routes (require JWT)
@@ -74,6 +83,18 @@ func main() {
 			adminOnly.POST("/listings", createListingHandler)
 			adminOnly.PUT("/listings/:id", updateListingHandler)
 			adminOnly.DELETE("/listings/:id", deleteListingHandler)
+
+			// Gallery
+			adminOnly.POST("/galeri", createGalleryHandler)
+			adminOnly.PUT("/galeri/:id", updateGalleryHandler)
+			adminOnly.DELETE("/galeri/:id", deleteGalleryHandler)
+
+			// Data Penduduk (Admin Only)
+			adminOnly.POST("/penduduk/datasets", createDatasetHandler)
+			adminOnly.DELETE("/penduduk/datasets/:id", deleteDatasetHandler)
+			adminOnly.PATCH("/penduduk/records/:id", patchPendudukHandler)
+			adminOnly.POST("/penduduk/datasets/:id/bulk", bulkCreatePendudukHandler)
+			adminOnly.DELETE("/penduduk/records/:id", deleteRecordHandler)
 		}
 
 		// ImageKit auth (server-side signing for secure uploads)
@@ -92,10 +113,12 @@ func main() {
 	log.Printf("   - POST http://localhost:%s/api/auth/login", port)
 	log.Printf("   - GET  http://localhost:%s/api/articles", port)
 	log.Printf("   - GET  http://localhost:%s/api/listings", port)
+	log.Printf("   - GET  http://localhost:%s/api/galeri", port)
 	log.Printf("📍 Protected endpoints (JWT required):")
 	log.Printf("   - GET  http://localhost:%s/api/auth/me", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/articles", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/listings", port)
+	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/galeri", port)
 	log.Printf("   - GET  http://localhost:%s/api/imagekit/auth", port)
 
 	if err := router.Run(":" + port); err != nil {

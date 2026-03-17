@@ -17,6 +17,7 @@ type Article struct {
 	Excerpt    string `json:"excerpt"`
 	CoverImage string `json:"cover_image"`
 	Author     string `json:"author"`
+	Category   string `json:"category"`
 	Status     string `json:"status"`
 	CreatedAt  string `json:"created_at"`
 	UpdatedAt  string `json:"updated_at"`
@@ -27,6 +28,7 @@ type ArticleInput struct {
 	Content    string `json:"content" binding:"required"`
 	Excerpt    string `json:"excerpt"`
 	CoverImage string `json:"cover_image"`
+	Category   string `json:"category"`
 	Status     string `json:"status"`
 	Slug       string `json:"slug" binding:"required"`
 }
@@ -41,7 +43,7 @@ func listArticlesHandler(c *gin.Context) {
 	}
 
 	status := c.Query("status") // optional filter
-	query := "SELECT id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, status, created_at, updated_at FROM articles"
+	query := "SELECT id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, COALESCE(category,'Umum'), status, created_at, updated_at FROM articles"
 	args := []interface{}{}
 
 	if status != "" && (status == "published" || status == "draft") {
@@ -60,7 +62,7 @@ func listArticlesHandler(c *gin.Context) {
 	articles := []Article{}
 	for rows.Next() {
 		var a Article
-		if err := rows.Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Status, &a.CreatedAt, &a.UpdatedAt); err != nil {
+		if err := rows.Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Category, &a.Status, &a.CreatedAt, &a.UpdatedAt); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
@@ -85,8 +87,8 @@ func getArticleHandler(c *gin.Context) {
 
 	var a Article
 	err = DB.QueryRow(
-		"SELECT id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, status, created_at, updated_at FROM articles WHERE id = $1", id,
-	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Status, &a.CreatedAt, &a.UpdatedAt)
+		"SELECT id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, COALESCE(category,'Umum'), status, created_at, updated_at FROM articles WHERE id = $1", id,
+	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Category, &a.Status, &a.CreatedAt, &a.UpdatedAt)
 
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})
@@ -116,6 +118,9 @@ func createArticleHandler(c *gin.Context) {
 	if input.Status == "" {
 		input.Status = "draft"
 	}
+	if input.Category == "" {
+		input.Category = "Umum"
+	}
 
 	author := c.GetString("username")
 	if author == "" {
@@ -124,11 +129,11 @@ func createArticleHandler(c *gin.Context) {
 
 	var a Article
 	err := DB.QueryRow(
-		`INSERT INTO articles (title, slug, content, excerpt, cover_image, author, status)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7)
-		 RETURNING id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, status, created_at, updated_at`,
-		input.Title, input.Slug, input.Content, input.Excerpt, input.CoverImage, author, input.Status,
-	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Status, &a.CreatedAt, &a.UpdatedAt)
+		`INSERT INTO articles (title, slug, content, excerpt, cover_image, author, category, status)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		 RETURNING id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, category, status, created_at, updated_at`,
+		input.Title, input.Slug, input.Content, input.Excerpt, input.CoverImage, author, input.Category, input.Status,
+	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Category, &a.Status, &a.CreatedAt, &a.UpdatedAt)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -157,13 +162,17 @@ func updateArticleHandler(c *gin.Context) {
 		return
 	}
 
+	if input.Category == "" {
+		input.Category = "Umum"
+	}
+
 	var a Article
 	err = DB.QueryRow(
-		`UPDATE articles SET title=$1, slug=$2, content=$3, excerpt=$4, cover_image=$5, status=$6
-		 WHERE id=$7
-		 RETURNING id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, status, created_at, updated_at`,
-		input.Title, input.Slug, input.Content, input.Excerpt, input.CoverImage, input.Status, id,
-	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Status, &a.CreatedAt, &a.UpdatedAt)
+		`UPDATE articles SET title=$1, slug=$2, content=$3, excerpt=$4, cover_image=$5, category=$6, status=$7
+		 WHERE id=$8
+		 RETURNING id, title, slug, content, COALESCE(excerpt,''), COALESCE(cover_image,''), author, category, status, created_at, updated_at`,
+		input.Title, input.Slug, input.Content, input.Excerpt, input.CoverImage, input.Category, input.Status, id,
+	).Scan(&a.ID, &a.Title, &a.Slug, &a.Content, &a.Excerpt, &a.CoverImage, &a.Author, &a.Category, &a.Status, &a.CreatedAt, &a.UpdatedAt)
 
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Article not found"})

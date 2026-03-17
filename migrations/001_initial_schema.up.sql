@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS articles (
     excerpt     VARCHAR(500),
     cover_image VARCHAR(512),
     author      VARCHAR(100)    NOT NULL DEFAULT 'Admin',
+    category    VARCHAR(100)    NOT NULL DEFAULT 'Umum',
     status      VARCHAR(20)     NOT NULL DEFAULT 'draft'
                                 CHECK (status IN ('draft', 'published')),
     created_at  TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS articles (
 
 CREATE INDEX IF NOT EXISTS idx_articles_slug   ON articles(slug);
 CREATE INDEX IF NOT EXISTS idx_articles_status ON articles(status);
+CREATE INDEX IF NOT EXISTS idx_articles_category ON articles(category);
 
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
@@ -55,10 +57,19 @@ CREATE TABLE IF NOT EXISTS app_users (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 4. Official Resident Data (Penduduk)
+-- 4. Official Resident Data (Penduduk & Datasets)
+CREATE TABLE IF NOT EXISTS penduduk_datasets (
+    id SERIAL PRIMARY KEY,
+    tahun INT NOT NULL UNIQUE,
+    nama_file VARCHAR(255),
+    total_records INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS penduduk (
     id SERIAL PRIMARY KEY,
-    nik VARCHAR(16) NOT NULL UNIQUE,
+    dataset_id INT REFERENCES penduduk_datasets(id) ON DELETE CASCADE,
+    nik VARCHAR(16) NOT NULL,
     no_kk VARCHAR(16) NOT NULL,
     nama VARCHAR(255) NOT NULL,
     jenis_kelamin VARCHAR(1) NOT NULL CHECK (jenis_kelamin IN ('L', 'P')),
@@ -71,10 +82,12 @@ CREATE TABLE IF NOT EXISTS penduduk (
     bisa_baca BOOLEAN NOT NULL DEFAULT FALSE,
     kewarganegaraan VARCHAR(50) NOT NULL DEFAULT 'WNI',
     alamat TEXT NOT NULL,
-    kedudukan_keluarga VARCHAR(100)
+    kedudukan_keluarga VARCHAR(100),
+    UNIQUE (nik, dataset_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_penduduk_nik ON penduduk(nik);
+CREATE INDEX IF NOT EXISTS idx_penduduk_dataset_id ON penduduk(dataset_id);
 
 -- 5. Pengaduan (Complaints)
 CREATE TABLE IF NOT EXISTS pengaduan (
