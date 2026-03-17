@@ -32,39 +32,53 @@ backend/
 2. **Auto-seeding**: Saat awal aplikasi djalankan, backend akan otomatis membuat user default `admin` dan `bendahara` (jika belum ada).
 3. **Image Uploading**: Gambar tidak diproses oleh server Go secara langsung dan tidak disimpan sebagai Base64. Server Go hanya memberikan Endpoint `GET /api/imagekit/auth` yang meng-generate token sementara yang bersifat aman. Front-end menggunakan token ini untuk meng-upload ke ImageKit langsung.
 
-## API Routes Documentation
+## API Documentation (Detailed)
 
-Semua route diawali dengan base URL: `http://localhost:8081` (atau port yang disetting).
+Semua route diawali dengan base URL: `http://localhost:8081`
 
-### **Public Endpoints** (Tanpa Autentikasi)
+### 1. GET Articles
+Retrieve a list of published articles.
+- **URL:** `/api/articles`
+- **Method:** `GET`
 
-- `POST /api/auth/login`
-  - Body: `{ "username": "...", "password": "..." }`
-  - Mereturn JWT token dan info user/role jika berhasil.
-- `GET  /api/articles`
-  - Mengambil daftar semua artikel. Mendukung query param `?status=published`.
-- `GET  /api/articles/:id`
-  - Mengambil detail 1 artikel berdasarkan ID.
-- `GET  /api/listings`
-  - Mengambil daftar letak/fasilitas desa.
-- `GET  /api/listings/:id`
-  - Mengambil detail info 1 fasilitas spesifik.
+### 2. GET Galeri
+Retrieve a list of gallery items with images.
+- **URL:** `/api/galeri`
+- **Method:** `GET`
 
-### **Protected Endpoints** (Wajib Kirim Header `Authorization: Bearer <token>`)
+### 3. GET Listings
+Retrieve a list of location listings.
+- **URL:** `/api/listings`
+- **Method:** `GET`
 
-- `GET  /api/auth/me`
-  - Mengembalikan informasi identitas user & role yang login saat ini berdasarkan verifikasi Token.
-- `GET  /api/imagekit/auth`
-  - Endpoint utilitas yang mereturn token JWT rahasia sekali pakai milik ImageKit (signature) untuk memberikan akses upload sementara.
+### 4. GET Population Stats
+Retrieve population statistics for a given dataset.
+- **URL:** `/api/penduduk/datasets/:id/stats`
+- **Method:** `GET`
 
-### **Protected Endpoints + Admin Role** (Wajib Login & Wajib Berperan Sebagai 'Admin')
+#### Example Response — `200 OK`
+```json
+{
+  "age_range": { "0-5": 70, "6-12": 131, "18-59": 729, ... },
+  "dusun": { "Dusun 1": 464, "Dusun 2": 211, ... },
+  "education": { "SD Sederajat": 390, "SMP Sederajat": 180, ... },
+  "gender": { "Laki-laki": 571, "Perempuan": 568 },
+  "job": { "Petani": 211, "IRT": 251, "Wiraswasta": 55, ... },
+  "marriage": { "Belum Kawin": 569, "Kawin": 509, ... },
+  "religion": { "Islam": 1123, "Kristen": 15 ... }
+}
+```
 
-- `POST   /api/articles` (Create Artikel Baru)
-- `PUT    /api/articles/:id` (Update Edit Artikel)
-- `DELETE /api/articles/:id` (Hapus Artikel)
-- `POST   /api/listings` (Add Listing Peta Baru)
-- `PUT    /api/listings/:id` (Update Listing)
-- `DELETE /api/listings/:id` (Hapus Listing)
+> Untuk dokumentasi lengkap beserta contoh JSON tiap endpoint, silakan rujuk ke file `coll_doc.md`.
+
+### Protected Endpoints (Admin/Authorized)
+- `POST /api/auth/login` - Login admin
+- `POST /api/articles` - Create Artikel
+- `POST /api/galeri` - Upload Foto Galeri Baru
+- `POST /api/listings` - Add Listing Peta
+- `POST /api/penduduk/datasets` - Buat Dataset Tahun Baru
+- `POST /api/penduduk/datasets/:id/bulk` - Import Data Excel (JSON)
+- `PATCH /api/penduduk/records/:id` - Update baris data penduduk (Excel-like edit)
 
 ## Menjalankan Secara Lokal
 
