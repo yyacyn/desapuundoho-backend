@@ -1,0 +1,5 @@
+ALTER TABLE pengaduan DROP COLUMN IF EXISTS kategori;
+
+DROP TABLE IF EXISTS sdgs_desa;
+DROP TABLE IF EXISTS bansos;
+DROP TABLE IF EXISTS stunting;

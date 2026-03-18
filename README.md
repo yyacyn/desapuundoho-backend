@@ -32,53 +32,61 @@ backend/
 2. **Auto-seeding**: Saat awal aplikasi djalankan, backend akan otomatis membuat user default `admin` dan `bendahara` (jika belum ada).
 3. **Image Uploading**: Gambar tidak diproses oleh server Go secara langsung dan tidak disimpan sebagai Base64. Server Go hanya memberikan Endpoint `GET /api/imagekit/auth` yang meng-generate token sementara yang bersifat aman. Front-end menggunakan token ini untuk meng-upload ke ImageKit langsung.
 
+## Fitur yang Sedang Dikembangkan (WIP)
+- **Stunting**: Endpoint dan tabel migrasi sudah ditambahkan ke skema untuk mendata kasus stunting per dusun.
+- **Bansos**: Sistem manajemen status penyaluran Bantuan Sosial untuk warga.
+- **SDGs Desa**: Pendataan skor pembangunan per tahun.
+- **Pengajuan PPID**: Sistem persuratan dan administrasi request masyarakat ke desa.
+- **Pengaduan**: Laporan sudah disupport dengan field kategori dan *foto lampiran*. 
+
 ## API Documentation (Detailed)
 
 Semua route diawali dengan base URL: `http://localhost:8081`
 
 ### 1. GET Articles
 Retrieve a list of published articles.
-- **URL:** `/api/articles`
 - **Method:** `GET`
+- **URL:** `/api/articles`
 
 ### 2. GET Galeri
 Retrieve a list of gallery items with images.
-- **URL:** `/api/galeri`
 - **Method:** `GET`
+- **URL:** `/api/galeri`
 
 ### 3. GET Listings
 Retrieve a list of location listings.
-- **URL:** `/api/listings`
 - **Method:** `GET`
+- **URL:** `/api/listings`
 
 ### 4. GET Population Stats
 Retrieve population statistics for a given dataset.
-- **URL:** `/api/penduduk/datasets/:id/stats`
 - **Method:** `GET`
+- **URL:** `/api/penduduk/datasets/:id/stats`
+*(Ganti `:id` dengan referensial ID tahun dataset).*
 
 #### Example Response — `200 OK`
 ```json
 {
-  "age_range": { "0-5": 70, "6-12": 131, "18-59": 729, ... },
-  "dusun": { "Dusun 1": 464, "Dusun 2": 211, ... },
-  "education": { "SD Sederajat": 390, "SMP Sederajat": 180, ... },
+  "age_range": { "18-59": 729, "60+": 100 },
+  "dusun": { "Dusun 1": 464, "Dusun 2": 211 },
+  "education": { "SD Sederajat": 390, "SMP Sederajat": 180 },
   "gender": { "Laki-laki": 571, "Perempuan": 568 },
-  "job": { "Petani": 211, "IRT": 251, "Wiraswasta": 55, ... },
-  "marriage": { "Belum Kawin": 569, "Kawin": 509, ... },
-  "religion": { "Islam": 1123, "Kristen": 15 ... }
+  "job": { "Petani": 211, "IRT": 251, "Wiraswasta": 55 },
+  "marriage": { "Belum Kawin": 569, "Kawin": 509 },
+  "religion": { "Islam": 1123, "Kristen": 15 }
 }
 ```
 
-> Untuk dokumentasi lengkap beserta contoh JSON tiap endpoint, silakan rujuk ke file `coll_doc.md`.
-
 ### Protected Endpoints (Admin/Authorized)
-- `POST /api/auth/login` - Login admin
+*(Memerlukan JWT "Bearer Token" di Header Request)*
+- `POST /api/auth/login` - Login admin (bukan protected, return token)
 - `POST /api/articles` - Create Artikel
 - `POST /api/galeri` - Upload Foto Galeri Baru
 - `POST /api/listings` - Add Listing Peta
 - `POST /api/penduduk/datasets` - Buat Dataset Tahun Baru
 - `POST /api/penduduk/datasets/:id/bulk` - Import Data Excel (JSON)
 - `PATCH /api/penduduk/records/:id` - Update baris data penduduk (Excel-like edit)
+- `GET /api/imagekit/auth` - Endpoint untuk mengambil Signature Token ImageKit
 
 ## Menjalankan Secara Lokal
 

@@ -196,3 +196,5 @@ CREATE TABLE IF NOT EXISTS apbd_pengeluaran (
     bidang VARCHAR(255) NOT NULL,
     jumlah BIGINT NOT NULL DEFAULT 0
 );
+
+
