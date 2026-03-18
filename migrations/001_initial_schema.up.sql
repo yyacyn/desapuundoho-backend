@@ -29,6 +29,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS set_articles_updated_at ON articles;
 CREATE TRIGGER set_articles_updated_at
     BEFORE UPDATE ON articles
     FOR EACH ROW EXECUTE PROCEDURE update_updated_at();
