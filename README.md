@@ -19,7 +19,12 @@ backend/
 ├── database.go         # Koneksi ke DB PostgreSQL dan sistem auto-migration
 ├── auth.go             # Logic Login, manajemen JWT, RBAC Middleware, dan seeder default user
 ├── articles.go         # Endpoint handler untuk fitur Berita/Artikel (CRUD ke DB)
+├── dusun.go            # Endpoint handler untuk fitur Dusun dan Peta (CRUD ke DB)
+├── gallery.go          # Endpoint handler untuk fitur Gallery (CRUD ke DB)
+├── idm.go              # Endpoint handler untuk fitur IDM (Fetch endpoint pemerintah)
 ├── listings.go         # Endpoint handler untuk fitur Fasilitas/Listing dan Peta (CRUD ke DB)
+├── penduduk.go         # Endpoint handler untuk fitur Penduduk (CRUD ke DB)
+├── sdgs.go             # Endpoint handler untuk fitur SDGs (Fetch endpoint pemerintah)
 ├── migrations/         # Folder berisi file migrasi raw SQL (misal: 001_initial_schema.up.sql)
 │   └── 001_initial_schema.up.sql # Skema definisi tabel DB pertama kali
 ├── go.mod / go.sum     # Dependency management Golang
