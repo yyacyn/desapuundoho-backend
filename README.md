@@ -53,15 +53,82 @@ Retrieve a list of published articles.
 - **Method:** `GET`
 - **URL:** `/api/articles`
 
+
+#### Example Response — `200 OK`
+```json
+{
+    "articles": [
+        {
+            "id": 2,
+            "title": "pochita",
+            "slug": "pochita",
+            "content": "<p>aaaaaaa</p>",
+            "excerpt": "dream on",
+            "cover_image": "https://ik.imagekit.io/yyacyn/articles/ec705c039692f211296e621444ff7764_alW23V9xh.jpg",
+            "author": "admin",
+            "category": "ssss",
+            "status": "published",
+            "created_at": "2026-03-17T08:31:33.740874Z",
+            "updated_at": "2026-03-17T08:34:10.121014Z"
+        },
+        {
+            "id": 1,
+            "title": "mai",
+            "slug": "mai",
+            "content": "<p>adsasda</p><p><strong>asdasda</strong></p><p>asdasa</p><p><img src=\"https://ik.imagekit.io/yyacyn/articles/content/93ef7b8e076da1e410a3425af2b87488_GGAmdYOwP.jpg\"></p>",
+            "excerpt": "uayay",
+            "cover_image": "https://ik.imagekit.io/yyacyn/articles/c178fe4c2b6a4f495a3e0d461af69dac_PphN06myA.jpg",
+            "author": "admin",
+            "category": "hmmm",
+            "status": "published",
+            "created_at": "2026-03-17T08:23:36.323851Z",
+            "updated_at": "2026-03-17T08:23:36.323851Z"
+        }
+    ]
+}
+```
+
 ### 2. GET Galeri
 Retrieve a list of gallery items with images.
 - **Method:** `GET`
 - **URL:** `/api/galeri`
 
+#### Example Response — `200 OK`
+```json
+{
+    "galeri": [
+        {
+            "id": 1,
+            "images": [
+                "https://ik.imagekit.io/yyacyn/galeri/44e2c88961067bde33a27c6c54699a8c_57Z8gHXjjN.jpg",
+                "https://ik.imagekit.io/yyacyn/galeri/WhatsApp_Image_2026-03-12_at_14.06.00_BPpjcwVi2.jpeg"
+            ],
+            "caption": "seiba",
+            "created_at": "2026-03-17T08:57:21.910822Z"
+        }
+    ]
+}
+```
+
 ### 3. GET Listings
 Retrieve a list of location listings.
 - **Method:** `GET`
 - **URL:** `/api/listings`
+
+#### Example Response — `200 OK`
+```json
+{
+    "listings": [
+        {
+            "id": 1,
+            "nama": "ougi",
+            "koordinat": "-3.11131, 121.08936",
+            "image_url": "https://ik.imagekit.io/yyacyn/listings/G6cdDgHbwAAEBT6_ZUoJQ6ops.jpg",
+            "created_at": "2026-03-16T15:55:29.418643Z"
+        }
+    ]
+}
+```
 
 ### 4. GET Population Stats
 Retrieve population statistics for a given dataset, mapping them to regions and demography.
@@ -84,6 +151,7 @@ Retrieve population statistics for a given dataset, mapping them to regions and 
   "religion_by_dusun": { "Islam": { "Dusun 1": 462, "Dusun 2": 211, "...": "..." } }
 }
 ```
+
 
 ### 5. GET Dusun Boundaries
 Retrieve mapping data, boundary colors, and GeoJSON shapes for each Dusun.
