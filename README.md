@@ -33,13 +33,13 @@ backend/
 3. **Image Uploading**: Gambar tidak diproses oleh server Go secara langsung dan tidak disimpan sebagai Base64. Server Go hanya memberikan Endpoint `GET /api/imagekit/auth` yang meng-generate token sementara yang bersifat aman. Front-end menggunakan token ini untuk meng-upload ke ImageKit langsung.
 
 ## Fitur yang Sedang Dikembangkan (WIP)
+- **Visualisasi Data**: Visualisasi data di halaman overview masih kurang.
 - **Stunting**: Endpoint dan tabel migrasi sudah ditambahkan ke skema untuk mendata kasus stunting per dusun.
 - **Bansos**: Sistem manajemen status penyaluran Bantuan Sosial untuk warga.
-- **SDGs Desa**: Pendataan skor pembangunan per tahun.
 - **Pengajuan PPID**: Sistem persuratan dan administrasi request masyarakat ke desa.
 - **Pengaduan**: Laporan sudah disupport dengan field kategori dan *foto lampiran*. 
 
-## API Documentation (Detailed)
+## API Documentation
 
 Semua route diawali dengan base URL: `http://localhost:8081`
 
