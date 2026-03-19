@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS dusun_boundaries (
+    id SERIAL PRIMARY KEY,
+    nama_dusun VARCHAR(100) NOT NULL,
+    warna VARCHAR(20) NOT NULL DEFAULT '#298064',
+    geojson_data JSONB NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

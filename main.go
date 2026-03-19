@@ -58,10 +58,17 @@ func main() {
 		api.GET("/galeri", listGalleryHandler)
 		api.GET("/galeri/:id", getGalleryHandler)
 
+		// Public Dusun boundary read endpoint
+		api.GET("/dusun", listDusunHandler)
+
 		// Public Resident Data (for graphs & village profile)
 		api.GET("/penduduk/datasets", listDatasetsHandler)
 		api.GET("/penduduk/datasets/:id/records", listPendudukByDatasetHandler)
 		api.GET("/penduduk/datasets/:id/stats", getPendudukStatsHandler)
+
+		// Public SDG Data from Kemendesa
+		api.GET("/sdgs", GetLiveSDGS)
+		api.GET("/idm", GetLiveIDM)
 	}
 
 	// Protected routes (require JWT)
@@ -88,6 +95,11 @@ func main() {
 			adminOnly.POST("/galeri", createGalleryHandler)
 			adminOnly.PUT("/galeri/:id", updateGalleryHandler)
 			adminOnly.DELETE("/galeri/:id", deleteGalleryHandler)
+
+			// Dusun Boundaries
+			adminOnly.POST("/dusun", createDusunHandler)
+			adminOnly.PUT("/dusun/:id", updateDusunHandler)
+			adminOnly.DELETE("/dusun/:id", deleteDusunHandler)
 
 			// Data Penduduk (Admin Only)
 			adminOnly.POST("/penduduk/datasets", createDatasetHandler)

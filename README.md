@@ -59,7 +59,7 @@ Retrieve a list of location listings.
 - **URL:** `/api/listings`
 
 ### 4. GET Population Stats
-Retrieve population statistics for a given dataset.
+Retrieve population statistics for a given dataset, mapping them to regions and demography.
 - **Method:** `GET`
 - **URL:** `/api/penduduk/datasets/:id/stats`
 *(Ganti `:id` dengan referensial ID tahun dataset).*
@@ -67,13 +67,96 @@ Retrieve population statistics for a given dataset.
 #### Example Response — `200 OK`
 ```json
 {
-  "age_range": { "18-59": 729, "60+": 100 },
-  "dusun": { "Dusun 1": 464, "Dusun 2": 211 },
-  "education": { "SD Sederajat": 390, "SMP Sederajat": 180 },
+  "age_range": { "18-59": 729, "60+": 100, "...": "..." },
+  "age_by_dusun": { "18-59": { "Dusun 1": 304, "Dusun 2": 129, "...": "..." } },
+  "dusun": { "Dusun 1": 464, "Dusun 2": 211, "...": "..." },
+  "education": { "SD Sederajat": 390, "SMP Sederajat": 180, "...": "..." },
   "gender": { "Laki-laki": 571, "Perempuan": 568 },
-  "job": { "Petani": 211, "IRT": 251, "Wiraswasta": 55 },
-  "marriage": { "Belum Kawin": 569, "Kawin": 509 },
-  "religion": { "Islam": 1123, "Kristen": 15 }
+  "gender_by_dusun": { "Laki-laki": { "Dusun 1": 244, "Dusun 2": 95, "...": "..." } },
+  "job": { "Petani": 211, "IRT": 251, "Wiraswasta": 55, "...": "..." },
+  "marriage": { "Belum Kawin": 569, "Kawin": 509, "...": "..." },
+  "religion": { "Islam": 1123, "Kristen": 15, "...": "..." },
+  "religion_by_dusun": { "Islam": { "Dusun 1": 462, "Dusun 2": 211, "...": "..." } }
+}
+```
+
+### 5. GET Dusun Boundaries
+Retrieve mapping data, boundary colors, and GeoJSON shapes for each Dusun.
+- **Method:** `GET`
+- **URL:** `/api/dusun`
+
+#### Example Response — `200 OK`
+```json
+{
+    "dusun": [
+        {
+            "id": 1,
+            "nama_dusun": "Dusun 1",
+            "warna": "#298064",
+            "geojson_data": "{\"type\": \"Polygon\", \"coordinates\": [[[121.09, -3.10]...]]}"
+        }
+    ]
+}
+```
+
+### 6. GET SDGs Data
+Retrieve live SDGs (Sustainable Development Goals) score data from Kemendesa API.
+- **Method:** `GET`
+- **URL:** `/api/sdgs`
+
+#### Example Response — `200 OK`
+```json
+{
+    "average": "46.58",
+    "data": [
+        {
+            "goals": 1,
+            "title": "Desa Tanpa Kemiskinan",
+            "score": 51.63
+        },
+        {
+            "goals": 2,
+            "title": "Desa Tanpa Kelaparan",
+            "score": 62.5
+        }
+    ],
+    "total_desa": 1
+}
+```
+
+### 7. GET IDM Data
+Retrieve live IDM (Indeks Desa Membangun) data from Kemendesa API. 
+**Note:** You can include an optional `tahun` query parameter to filter by year. If the year returned no data, the API will output unavailable data gracefully.
+- **Method:** `GET`
+- **URL:** `/api/idm` or `/api/idm?tahun=2024`
+
+#### Example Response — `200 OK`
+```json
+{
+    "status": 200,
+    "error": false,
+    "mapData": {
+        "SUMMARIES": {
+            "SKOR_SAAT_INI": 0.6998,
+            "STATUS": "BERKEMBANG",
+            "TARGET_STATUS": "MAJU",
+            "TAHUN": 2024
+        },
+        "ROW": [
+            {
+                "NO": 1,
+                "INDIKATOR": "Skor Akses Sarkes",
+                "SKOR": 5,
+                "KETERANGAN": "Waktu tempuh dari ≤ 30  Menit"
+            }
+        ],
+        "IDENTITAS": [
+            {
+                "nama_desa": "PUUNDOHO",
+                "nama_kecamatan": "PAKUE UTARA"
+            }
+        ]
+    }
 }
 ```
 
@@ -94,14 +177,3 @@ Retrieve population statistics for a given dataset.
 2. Buka terminal di direktori `backend`
 3. Download dependency: `go mod download`
 4. Jalankan server: `go run .`
-
-## Proses Deploy (ini gausah dipikirin biar aku aja yang deploy)
-
-Untuk deploy, build service menjadi sebuah file biner / *executable* tunggal.
-Untuk server hosting berbasis Linux (seperti VPS Ubuntu / cPanel Terminal):
-
-```bash
-$env:GOOS="linux"; $env:GOARCH="amd64"; go build -o server
-```
-
-Lalu angkat file bernama `server` ke direktori root hosting dan jalankan service-nya.

@@ -127,39 +127,52 @@ func getPendudukStatsHandler(c *gin.Context) {
 	datasetID := c.Param("id")
 
 	stats := gin.H{
-		"gender":    make(map[string]int),
-		"religion":  make(map[string]int),
-		"education": make(map[string]int),
-		"job":       make(map[string]int),
-		"marriage":  make(map[string]int),
-		"dusun":     make(map[string]int),
-		"age_range": make(map[string]int),
+		"gender":            make(map[string]int),
+		"religion":          make(map[string]int),
+		"education":         make(map[string]int),
+		"job":               make(map[string]int),
+		"marriage":          make(map[string]int),
+		"dusun":             make(map[string]int),
+		"age_range":         make(map[string]int),
+		"gender_by_dusun":   make(map[string]map[string]int),
+		"religion_by_dusun": make(map[string]map[string]int),
+		"age_by_dusun":      make(map[string]map[string]int),
 	}
 
 	// Helper to run group by counts with normalization
-	runQuery := func(field string, category string, target map[string]int) {
-		query := fmt.Sprintf("SELECT COALESCE(%s, 'Tidak Diketahui'), COUNT(*) FROM penduduk WHERE dataset_id = $1 GROUP BY %s", field, field)
+	runQuery := func(field string, category string, target map[string]int, targetByDusun map[string]map[string]int) {
+		query := fmt.Sprintf("SELECT COALESCE(%s, 'Tidak Diketahui'), COALESCE(alamat, 'Tidak Diketahui'), COUNT(*) FROM penduduk WHERE dataset_id = $1 GROUP BY %s, alamat", field, field)
 		rows, err := DB.Query(query, datasetID)
 		if err == nil {
 			defer rows.Close()
 			for rows.Next() {
 				var key string
+				var dusunRaw string
 				var count int
-				if err := rows.Scan(&key, &count); err == nil {
+				if err := rows.Scan(&key, &dusunRaw, &count); err == nil {
 					// Normalize the key before adding to target
 					cleanKey := normalizeStatValue(category, key)
+					cleanDusun := normalizeStatValue("dusun", dusunRaw)
+                    
 					target[cleanKey] += count
+                    
+					if targetByDusun != nil {
+						if targetByDusun[cleanKey] == nil {
+							targetByDusun[cleanKey] = make(map[string]int)
+						}
+						targetByDusun[cleanKey][cleanDusun] += count
+					}
 				}
 			}
 		}
 	}
 
-	runQuery("jenis_kelamin", "gender", stats["gender"].(map[string]int))
-	runQuery("agama", "religion", stats["religion"].(map[string]int))
-	runQuery("pend_terakhir", "education", stats["education"].(map[string]int))
-	runQuery("pekerjaan", "job", stats["job"].(map[string]int))
-	runQuery("status_kawin", "marriage", stats["marriage"].(map[string]int))
-	runQuery("alamat", "dusun", stats["dusun"].(map[string]int)) // User said: dusun is alamat
+	runQuery("jenis_kelamin", "gender", stats["gender"].(map[string]int), stats["gender_by_dusun"].(map[string]map[string]int))
+	runQuery("agama", "religion", stats["religion"].(map[string]int), stats["religion_by_dusun"].(map[string]map[string]int))
+	runQuery("pend_terakhir", "education", stats["education"].(map[string]int), nil)
+	runQuery("pekerjaan", "job", stats["job"].(map[string]int), nil)
+	runQuery("status_kawin", "marriage", stats["marriage"].(map[string]int), nil)
+	runQuery("alamat", "dusun", stats["dusun"].(map[string]int), nil)
 
 	// Age Range Calculation
 	ageRows, err := DB.Query(`
@@ -171,17 +184,27 @@ func getPendudukStatsHandler(c *gin.Context) {
 				WHEN DATE_PART('year', AGE(tanggal_lahir)) <= 59 THEN '18-59'
 				ELSE '60+'
 			END as range,
+            COALESCE(alamat, 'Tidak Diketahui'),
 			COUNT(*) 
-		FROM penduduk WHERE dataset_id = $1 GROUP BY range`, datasetID)
+		FROM penduduk WHERE dataset_id = $1 GROUP BY range, alamat`, datasetID)
 
 	if err == nil {
 		defer ageRows.Close()
 		target := stats["age_range"].(map[string]int)
+		targetByDusun := stats["age_by_dusun"].(map[string]map[string]int)
+        
 		for ageRows.Next() {
 			var rangeKey string
+			var dusunRaw string
 			var count int
-			if err := ageRows.Scan(&rangeKey, &count); err == nil {
-				target[rangeKey] = count
+			if err := ageRows.Scan(&rangeKey, &dusunRaw, &count); err == nil {
+				target[rangeKey] += count
+                
+				cleanDusun := normalizeStatValue("dusun", dusunRaw)
+				if targetByDusun[rangeKey] == nil {
+					targetByDusun[rangeKey] = make(map[string]int)
+				}
+				targetByDusun[rangeKey][cleanDusun] += count
 			}
 		}
 	}
