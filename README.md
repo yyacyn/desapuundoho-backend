@@ -160,6 +160,91 @@ Retrieve live IDM (Indeks Desa Membangun) data from Kemendesa API.
 }
 ```
 
+### 8. GET Produk Desa
+Retrieve a list of BUMDes and MSME products available in the village.
+- **Method:** `GET`
+- **URL:** `/api/produk-desa`
+
+#### Example Response — `200 OK`
+```json
+{
+    "produk": [
+        {
+            "id": 2,
+            "nama": "masa",
+            "deskripsi": "masa",
+            "harga": 33333,
+            "rating": 2,
+            "kontak": "098765444",
+            "image_url": "https://ik.imagekit.io/yyacyn/produk-desa/WhatsApp_Image_2026-03-12_at_14.06.00__1__qgfwmJFtn.jpeg",
+            "created_at": "2026-03-23T15:48:30.262409Z"
+        },
+        {
+            "id": 1,
+            "nama": "neco",
+            "deskripsi": "arc",
+            "harga": 333,
+            "rating": 2,
+            "kontak": "08767822",
+            "image_url": "https://ik.imagekit.io/yyacyn/produk-desa/a2628373cdeb3b9fa750aeaf99d6369f_35Uih9cK2.jpg",
+            "created_at": "2026-03-23T15:40:47.368362Z"
+        }
+    ]
+}
+```
+
+### 9. GET APBDes Pendapatan
+Retrieve the income (pendapatan) details for a specific APBDes year entry.
+- **Method:** `GET`
+- **URL:** `/api/apbdes/:id/pendapatan`
+*(Ganti `:id` dengan referensial ID APBDes)*
+
+#### Example Response — `200 OK`
+```json
+{
+    "pendapatan": [
+        {
+            "id": 1,
+            "id_apbd": 1,
+            "kategori": "sadasdasd",
+            "jumlah": 1233333
+        },
+        {
+            "id": 2,
+            "id_apbd": 1,
+            "kategori": "asdasd",
+            "jumlah": 1212333
+        }
+    ]
+}
+```
+
+### 10. GET APBDes Pengeluaran
+Retrieve the expenses (pengeluaran) breakdown by sector for a specific APBDes year entry.
+- **Method:** `GET`
+- **URL:** `/api/apbdes/:id/pengeluaran`
+*(Ganti `:id` dengan referensial ID APBDes)*
+
+#### Example Response — `200 OK`
+```json
+{
+    "pengeluaran": [
+        {
+            "id": 1,
+            "id_apbd": 1,
+            "bidang": "daasdas",
+            "jumlah": 12122112
+        },
+        {
+            "id": 2,
+            "id_apbd": 1,
+            "bidang": "sadasd",
+            "jumlah": 123133
+        }
+    ]
+}
+```
+
 ### Protected Endpoints (Admin/Authorized)
 *(Memerlukan JWT "Bearer Token" di Header Request)*
 - `POST /api/auth/login` - Login admin (bukan protected, return token)

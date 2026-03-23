@@ -69,6 +69,12 @@ func main() {
 		// Public SDG Data from Kemendesa
 		api.GET("/sdgs", GetLiveSDGS)
 		api.GET("/idm", GetLiveIDM)
+
+		// Public reads for APBDes and Produk
+		api.GET("/produk-desa", listProdukDesaHandler)
+		api.GET("/apbdes", listApbdesHandler)
+		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
+		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
 	}
 
 	// Protected routes (require JWT)
@@ -111,6 +117,33 @@ func main() {
 
 		// ImageKit auth (server-side signing for secure uploads)
 		protected.GET("/imagekit/auth", imagekitAuthHandler)
+
+		// PDF Parser (for APBDes import)
+		protected.POST("/apbdes/parse-pdf", parsePDFHandler)
+
+		// Bendahara routes
+		bendahara := protected.Group("")
+		bendahara.Use(RoleMiddleware("bendahara"))
+		{
+			// Produk Desa
+			bendahara.POST("/produk-desa", createProdukDesaHandler)
+			bendahara.PUT("/produk-desa/:id", updateProdukDesaHandler)
+			bendahara.DELETE("/produk-desa/:id", deleteProdukDesaHandler)
+
+			// APBDes
+			bendahara.POST("/apbdes", createApbdesHandler)
+			bendahara.DELETE("/apbdes/:id", deleteApbdesHandler)
+
+			// APBDes Pendapatan
+			bendahara.POST("/apbdes/pendapatan", createPendapatanHandler)
+			bendahara.PUT("/apbdes/pendapatan/:id", updatePendapatanHandler)
+			bendahara.DELETE("/apbdes/pendapatan/:id", deletePendapatanHandler)
+
+			// APBDes Pengeluaran
+			bendahara.POST("/apbdes/pengeluaran", createPengeluaranHandler)
+			bendahara.PUT("/apbdes/pengeluaran/:id", updatePengeluaranHandler)
+			bendahara.DELETE("/apbdes/pengeluaran/:id", deletePengeluaranHandler)
+		}
 	}
 
 	// Get port from environment variable or use default
