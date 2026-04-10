@@ -50,7 +50,7 @@ backend/
 Backend ini menggunakan **Swagger (OpenAPI 3.0)** untuk dokumentasi API yang interaktif. Anda dapat melihat daftar lengkap endpoint, parameter, dan mencoba request langsung melalui browser.
 
 - **Swagger UI**: [http://localhost:8081/api/swagger/index.html](http://localhost:8081/api/swagger/index.html) ATAU
-- **Swagger UI**: [https://desapuundoho.my.id/api/swagger/index.html](https://desapuundoho.my.id/api/swagger/index.html)
+- **Swagger UI**: [https://api.desapuundoho.my.id/swagger/index.html](https://api.desapuundoho.my.id/swagger/index.html)
 - **Spec File**: `backend/docs/swagger.json`
 
 ### Cara Update Dokumentasi

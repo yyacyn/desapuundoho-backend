@@ -52,6 +52,17 @@ func main() {
 	// Create Gin router
 	router := gin.Default()
 
+	// Root path to stop 404 logs
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Desa Puundoho API is running",
+			"docs":    "/swagger/index.html",
+		})
+	})
+
+	// Swagger route (now at /swagger/index.html)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// CORS middleware
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -65,9 +76,6 @@ func main() {
 	// Public routes
 	api := router.Group("/api")
 	{
-		// Swagger route (now at /api/swagger/index.html)
-		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 		api.GET("/hello", helloHandler)
 		api.GET("/health", healthHandler)
 		api.POST("/auth/login", loginHandler)
