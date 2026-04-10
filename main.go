@@ -24,7 +24,7 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      localhost:8081
+// @host      
 // @BasePath  /api
 
 // @securityDefinitions.apikey  ApiKeyAuth
@@ -52,9 +52,6 @@ func main() {
 	// Create Gin router
 	router := gin.Default()
 
-	// Swagger route
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	// CORS middleware
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -68,6 +65,9 @@ func main() {
 	// Public routes
 	api := router.Group("/api")
 	{
+		// Swagger route (now at /api/swagger/index.html)
+		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 		api.GET("/hello", helloHandler)
 		api.GET("/health", healthHandler)
 		api.POST("/auth/login", loginHandler)

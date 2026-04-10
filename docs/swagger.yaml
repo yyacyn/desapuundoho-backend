@@ -286,7 +286,6 @@ definitions:
       total_desa:
         type: integer
     type: object
-host: localhost:8081
 info:
   contact:
     email: support@swagger.io

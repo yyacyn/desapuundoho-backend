@@ -49,7 +49,8 @@ backend/
 
 Backend ini menggunakan **Swagger (OpenAPI 3.0)** untuk dokumentasi API yang interaktif. Anda dapat melihat daftar lengkap endpoint, parameter, dan mencoba request langsung melalui browser.
 
-- **Swagger UI**: [http://localhost:8081/swagger/index.html](http://localhost:8081/swagger/index.html)
+- **Swagger UI**: [http://localhost:8081/swagger/index.html](http://localhost:8081/swagger/index.html) ATAU
+- **Swagger UI**: [https://desapuundoho.my.id/api/swagger/index.html](https://desapuundoho.my.id/api/swagger/index.html)
 - **Spec File**: `backend/docs/swagger.json`
 
 ### Cara Update Dokumentasi
@@ -75,4 +76,3 @@ go run github.com/swaggo/swag/cmd/swag init
 2. Buka terminal di direktori `backend`
 3. Download dependency: `go mod download`
 4. Jalankan server: `go run .`
-5. Buka Swagger UI di browser untuk lihat dokumentasi API: [http://localhost:8081/swagger/index.html](http://localhost:8081/swagger/index.html)
