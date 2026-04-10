@@ -25,6 +25,14 @@ type GalleryInput struct {
 // Handlers
 
 // GET /api/galeri
+// listGalleryHandler godoc
+// @Summary      List Gallery
+// @Description  Get a list of gallery items
+// @Tags         gallery
+// @Produce      json
+// @Success      200  {object}  map[string][]GalleryItem
+// @Failure      503  {object}  map[string]string
+// @Router       /galeri [get]
 func listGalleryHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -60,6 +68,15 @@ func listGalleryHandler(c *gin.Context) {
 }
 
 // GET /api/galeri/:id
+// getGalleryHandler godoc
+// @Summary      Get Gallery Item
+// @Description  Get a single gallery item by ID
+// @Tags         gallery
+// @Produce      json
+// @Param        id   path      int  true  "Gallery ID"
+// @Success      200  {object}  GalleryItem
+// @Failure      404  {object}  map[string]string
+// @Router       /galeri/{id} [get]
 func getGalleryHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -96,6 +113,17 @@ func getGalleryHandler(c *gin.Context) {
 }
 
 // POST /api/galeri (protected)
+// createGalleryHandler godoc
+// @Summary      Create Gallery Item
+// @Description  Create a new gallery item (Admin only)
+// @Tags         gallery
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        galeri  body      GalleryInput  true  "Gallery Data"
+// @Success      201     {object}  GalleryItem
+// @Failure      400     {object}  map[string]string
+// @Router       /galeri [post]
 func createGalleryHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -129,6 +157,18 @@ func createGalleryHandler(c *gin.Context) {
 }
 
 // PUT /api/galeri/:id (protected)
+// updateGalleryHandler godoc
+// @Summary      Update Gallery Item
+// @Description  Update an existing gallery item (Admin only)
+// @Tags         gallery
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id      path      int           true  "Gallery ID"
+// @Param        galeri  body      GalleryInput  true  "Update Data"
+// @Success      200     {object}  GalleryItem
+// @Failure      404     {object}  map[string]string
+// @Router       /galeri/{id} [put]
 func updateGalleryHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -172,6 +212,15 @@ func updateGalleryHandler(c *gin.Context) {
 }
 
 // DELETE /api/galeri/:id (protected)
+// deleteGalleryHandler godoc
+// @Summary      Delete Gallery Item
+// @Description  Delete a gallery item by ID (Admin only)
+// @Tags         gallery
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Gallery ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /galeri/{id} [delete]
 func deleteGalleryHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})

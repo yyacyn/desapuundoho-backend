@@ -21,6 +21,14 @@ type SDGResponse struct {
 }
 
 // GetLiveSDGS handles fetching live SDG data directly from Kemendesa API
+// GetLiveSDGS godoc
+// @Summary      Get Live SDGs Data
+// @Description  Fetch live SDGs score data directly from Kemendesa API
+// @Tags         external
+// @Produce      json
+// @Success      200  {object}  SDGResponse
+// @Failure      502  {object}  map[string]string
+// @Router       /sdgs [get]
 func GetLiveSDGS(c *gin.Context) {
 	// The specific location code for Puundoho: 7408051004
 	kemendesaURL := "https://sid.kemendesa.go.id/sdgs/searching/score-sdgs?location_code=7408051004"

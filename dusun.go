@@ -15,6 +15,14 @@ type DusunBoundary struct {
 	CreatedAt   string `json:"created_at"`
 }
 
+// listDusunHandler godoc
+// @Summary      List Dusun Boundaries
+// @Description  Get a list of all dusun boundaries with GeoJSON data
+// @Tags         dusun
+// @Produce      json
+// @Success      200  {object}  map[string][]DusunBoundary
+// @Failure      500  {object}  map[string]string
+// @Router       /dusun [get]
 func listDusunHandler(c *gin.Context) {
 	rows, err := DB.Query("SELECT id, nama_dusun, warna, geojson_data::text, created_at FROM dusun_boundaries ORDER BY created_at DESC")
 	if err != nil {
@@ -40,6 +48,17 @@ func listDusunHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"dusun": dusuns})
 }
 
+// createDusunHandler godoc
+// @Summary      Create Dusun Boundary
+// @Description  Create a new dusun boundary (Admin only)
+// @Tags         dusun
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        dusun  body      object  true  "Dusun Data"
+// @Success      200    {object}  DusunBoundary
+// @Failure      400    {object}  map[string]string
+// @Router       /dusun [post]
 func createDusunHandler(c *gin.Context) {
 	var input struct {
 		NamaDusun   string `json:"nama_dusun" binding:"required"`
@@ -73,6 +92,18 @@ func createDusunHandler(c *gin.Context) {
 	})
 }
 
+// updateDusunHandler godoc
+// @Summary      Update Dusun Boundary
+// @Description  Update an existing dusun boundary by ID (Admin only)
+// @Tags         dusun
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id     path      int     true  "Dusun ID"
+// @Param        dusun  body      object  true  "Update Data"
+// @Success      200    {object}  DusunBoundary
+// @Failure      404    {object}  map[string]string
+// @Router       /dusun/{id} [put]
 func updateDusunHandler(c *gin.Context) {
 	id := c.Param("id")
 	var input struct {
@@ -111,6 +142,15 @@ func updateDusunHandler(c *gin.Context) {
 	})
 }
 
+// deleteDusunHandler godoc
+// @Summary      Delete Dusun Boundary
+// @Description  Delete a dusun boundary by ID (Admin only)
+// @Tags         dusun
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Dusun ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /dusun/{id} [delete]
 func deleteDusunHandler(c *gin.Context) {
 	id := c.Param("id")
 	res, err := DB.Exec("DELETE FROM dusun_boundaries WHERE id = $1", id)

@@ -29,6 +29,14 @@ type ProdukDesaInput struct {
 }
 
 // GET /api/produk-desa
+// listProdukDesaHandler godoc
+// @Summary      List Produk Desa
+// @Description  Get a list of village products
+// @Tags         produk
+// @Produce      json
+// @Success      200  {object}  map[string][]ProdukDesa
+// @Failure      503  {object}  map[string]string
+// @Router       /produk-desa [get]
 func listProdukDesaHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -56,6 +64,17 @@ func listProdukDesaHandler(c *gin.Context) {
 }
 
 // POST /api/produk-desa
+// createProdukDesaHandler godoc
+// @Summary      Create Produk Desa
+// @Description  Create a new village product (Bendahara only)
+// @Tags         produk
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        produk  body      ProdukDesaInput  true  "Produk Data"
+// @Success      201     {object}  ProdukDesa
+// @Failure      400     {object}  map[string]string
+// @Router       /produk-desa [post]
 func createProdukDesaHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -85,6 +104,18 @@ func createProdukDesaHandler(c *gin.Context) {
 }
 
 // PUT /api/produk-desa/:id
+// updateProdukDesaHandler godoc
+// @Summary      Update Produk Desa
+// @Description  Update an existing village product (Bendahara only)
+// @Tags         produk
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id      path      int              true  "Produk ID"
+// @Param        produk  body      ProdukDesaInput  true  "Update Data"
+// @Success      200     {object}  ProdukDesa
+// @Failure      404     {object}  map[string]string
+// @Router       /produk-desa/{id} [put]
 func updateProdukDesaHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -124,6 +155,15 @@ func updateProdukDesaHandler(c *gin.Context) {
 }
 
 // DELETE /api/produk-desa/:id
+// deleteProdukDesaHandler godoc
+// @Summary      Delete Produk Desa
+// @Description  Delete a village product by ID (Bendahara only)
+// @Tags         produk
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Produk ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /produk-desa/{id} [delete]
 func deleteProdukDesaHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})

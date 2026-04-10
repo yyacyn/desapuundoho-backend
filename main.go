@@ -7,7 +7,30 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	_ "desapuundoho-backend/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title           Puundoho API
+// @version         1.0
+// @description     API server for Desa Puundoho Information System.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8081
+// @BasePath  /api
+
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
+// @description                 Paste your token with "Bearer " prefix (e.g. "Bearer <token>")
 
 func main() {
 	// Initialize database connection
@@ -28,6 +51,9 @@ func main() {
 
 	// Create Gin router
 	router := gin.Default()
+
+	// Swagger route
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// CORS middleware
 	router.Use(cors.New(cors.Config{

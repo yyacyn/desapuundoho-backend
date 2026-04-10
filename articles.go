@@ -35,7 +35,16 @@ type ArticleInput struct {
 
 
 // Handlers
-// GET /api/articles
+// listArticlesHandler godoc
+// @Summary      List articles
+// @Description  Get a list of published articles. Use ?status=published to filter. Leave empty to get all articles.
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Param        status  query     string  false  "Filter by status (published/draft)"
+// @Success      200     {object}  map[string][]Article
+// @Failure      503     {object}  map[string]string
+// @Router       /articles [get]
 func listArticlesHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -72,7 +81,16 @@ func listArticlesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"articles": articles})
 }
 
-// GET /api/articles/:id
+// getArticleHandler godoc
+// @Summary      Get an article
+// @Description  Get a single article by its ID
+// @Tags         articles
+// @Produce      json
+// @Param        id   path      int  true  "Article ID"
+// @Success      200  {object}  Article
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /articles/{id} [get]
 func getArticleHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -102,7 +120,17 @@ func getArticleHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, a)
 }
 
-// POST /api/articles  (protected)
+// createArticleHandler godoc
+// @Summary      Create article
+// @Description  Create a new article (Admin only)
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        article  body      ArticleInput  true  "Article Data"
+// @Success      201      {object}  Article
+// @Failure      400      {object}  map[string]string
+// @Router       /articles [post]
 func createArticleHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -143,7 +171,19 @@ func createArticleHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, a)
 }
 
-// PUT /api/articles/:id  (protected)
+// updateArticleHandler godoc
+// @Summary      Update article
+// @Description  Update an existing article by ID (Admin only)
+// @Tags         articles
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id       path      int           true  "Article ID"
+// @Param        article  body      ArticleInput  true  "Update Data"
+// @Success      200      {object}  Article
+// @Failure      400      {object}  map[string]string
+// @Failure      404      {object}  map[string]string
+// @Router       /articles/{id} [put]
 func updateArticleHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -186,7 +226,15 @@ func updateArticleHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, a)
 }
 
-// DELETE /api/articles/:id  (protected)
+// deleteArticleHandler godoc
+// @Summary      Delete article
+// @Description  Delete an article by ID (Admin only)
+// @Tags         articles
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Article ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /articles/{id} [delete]
 func deleteArticleHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})

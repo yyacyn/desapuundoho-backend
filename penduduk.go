@@ -40,6 +40,14 @@ type Penduduk struct {
 // --- DATASET HANDLERS ---
 
 // ListDatasetsHandler returns all years/snapshots
+// listDatasetsHandler godoc
+// @Summary      List Population Datasets
+// @Description  Get a list of all population snapshots (years)
+// @Tags         penduduk
+// @Produce      json
+// @Success      200  {array}   PendudukDataset
+// @Failure      500  {object}  map[string]string
+// @Router       /penduduk/datasets [get]
 func listDatasetsHandler(c *gin.Context) {
 	rows, err := DB.Query("SELECT id, tahun, nama_file, total_records, created_at FROM penduduk_datasets ORDER BY tahun DESC")
 	if err != nil {
@@ -60,6 +68,17 @@ func listDatasetsHandler(c *gin.Context) {
 }
 
 // CreateDatasetHandler initializes a new year snapshot
+// createDatasetHandler godoc
+// @Summary      Create Population Dataset
+// @Description  Initialize a new population year snapshot (Admin only)
+// @Tags         penduduk
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        dataset  body      PendudukDataset  true  "Dataset Data"
+// @Success      201      {object}  PendudukDataset
+// @Failure      400      {object}  map[string]string
+// @Router       /penduduk/datasets [post]
 func createDatasetHandler(c *gin.Context) {
 	var d PendudukDataset
 	if err := c.ShouldBindJSON(&d); err != nil {
@@ -81,6 +100,15 @@ func createDatasetHandler(c *gin.Context) {
 }
 
 // DeleteDatasetHandler removes a whole year's data
+// deleteDatasetHandler godoc
+// @Summary      Delete Population Dataset
+// @Description  Remove a whole year's population data (Admin only)
+// @Tags         penduduk
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Dataset ID"
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /penduduk/datasets/{id} [delete]
 func deleteDatasetHandler(c *gin.Context) {
 	id := c.Param("id")
 	_, err := DB.Exec("DELETE FROM penduduk_datasets WHERE id = $1", id)
@@ -94,6 +122,15 @@ func deleteDatasetHandler(c *gin.Context) {
 // --- RESIDENT RECORD HANDLERS ---
 
 // ListPendudukByDatasetHandler returns all residents for a specific year
+// listPendudukByDatasetHandler godoc
+// @Summary      List Residents by Dataset
+// @Description  Get all resident records for a specific year snapshot
+// @Tags         penduduk
+// @Produce      json
+// @Param        id   path      int  true  "Dataset ID"
+// @Success      200  {object}  map[string][]Penduduk
+// @Failure      500  {object}  map[string]string
+// @Router       /penduduk/datasets/{id}/records [get]
 func listPendudukByDatasetHandler(c *gin.Context) {
 	datasetID := c.Param("id")
 
@@ -123,6 +160,14 @@ func listPendudukByDatasetHandler(c *gin.Context) {
 }
 
 // GetPendudukStatsHandler returns aggregated data for charts
+// getPendudukStatsHandler godoc
+// @Summary      Get Population Statistics
+// @Description  Get aggregated population data for charts and graphs
+// @Tags         penduduk
+// @Produce      json
+// @Param        id   path      int  true  "Dataset ID"
+// @Success      200  {object}  object
+// @Router       /penduduk/datasets/{id}/stats [get]
 func getPendudukStatsHandler(c *gin.Context) {
 	datasetID := c.Param("id")
 
@@ -213,6 +258,18 @@ func getPendudukStatsHandler(c *gin.Context) {
 }
 
 // PatchPendudukHandler handles inline cell updates (Excel-like)
+// patchPendudukHandler godoc
+// @Summary      Patch Resident Record
+// @Description  Update specific fields of a resident record (Admin only)
+// @Tags         penduduk
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id       path      int     true  "Resident ID"
+// @Param        updates  body      object  true  "Field Updates"
+// @Success      200      {object}  map[string]string
+// @Failure      400      {object}  map[string]string
+// @Router       /penduduk/records/{id} [patch]
 func patchPendudukHandler(c *gin.Context) {
 	id := c.Param("id")
 	var updates map[string]interface{}
@@ -261,6 +318,18 @@ func patchPendudukHandler(c *gin.Context) {
 }
 
 // BulkCreatePendudukHandler handles bulk insertion into a dataset
+// bulkCreatePendudukHandler godoc
+// @Summary      Bulk Create Residents
+// @Description  Mass insert or update resident records for a dataset (Admin only)
+// @Tags         penduduk
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id    path      int         true  "Dataset ID"
+// @Param        list  body      []Penduduk  true  "List of residents"
+// @Success      200   {object}  map[string]interface{}
+// @Failure      400   {object}  map[string]string
+// @Router       /penduduk/datasets/{id}/bulk [post]
 func bulkCreatePendudukHandler(c *gin.Context) {
 	datasetID := c.Param("id")
 	var list []Penduduk
@@ -328,6 +397,15 @@ func bulkCreatePendudukHandler(c *gin.Context) {
 }
 
 // DeleteRecordHandler removes a single resident record
+// deleteRecordHandler godoc
+// @Summary      Delete Resident Record
+// @Description  Remove a single resident record (Admin only)
+// @Tags         penduduk
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Resident ID"
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /penduduk/records/{id} [delete]
 func deleteRecordHandler(c *gin.Context) {
 	id := c.Param("id")
 	_, err := DB.Exec("DELETE FROM penduduk WHERE id = $1", id)

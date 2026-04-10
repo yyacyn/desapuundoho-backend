@@ -1,0 +1,1555 @@
+basePath: /api
+definitions:
+  main.ApbdDesa:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      tahun:
+        type: integer
+      total_pendapatan:
+        type: integer
+      total_pengeluaran:
+        type: integer
+    type: object
+  main.ApbdDesaInput:
+    properties:
+      tahun:
+        type: integer
+      total_pendapatan:
+        type: integer
+      total_pengeluaran:
+        type: integer
+    required:
+    - tahun
+    type: object
+  main.ApbdPendapatan:
+    properties:
+      id:
+        type: integer
+      id_apbd:
+        type: integer
+      jumlah:
+        type: integer
+      kategori:
+        type: string
+    type: object
+  main.ApbdPendapatanInput:
+    properties:
+      id_apbd:
+        type: integer
+      jumlah:
+        type: integer
+      kategori:
+        type: string
+    required:
+    - id_apbd
+    - jumlah
+    - kategori
+    type: object
+  main.ApbdPengeluaran:
+    properties:
+      bidang:
+        type: string
+      id:
+        type: integer
+      id_apbd:
+        type: integer
+      jumlah:
+        type: integer
+    type: object
+  main.ApbdPengeluaranInput:
+    properties:
+      bidang:
+        type: string
+      id_apbd:
+        type: integer
+      jumlah:
+        type: integer
+    required:
+    - bidang
+    - id_apbd
+    - jumlah
+    type: object
+  main.Article:
+    properties:
+      author:
+        type: string
+      category:
+        type: string
+      content:
+        type: string
+      cover_image:
+        type: string
+      created_at:
+        type: string
+      excerpt:
+        type: string
+      id:
+        type: integer
+      slug:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.ArticleInput:
+    properties:
+      category:
+        type: string
+      content:
+        type: string
+      cover_image:
+        type: string
+      excerpt:
+        type: string
+      slug:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    - slug
+    - title
+    type: object
+  main.DusunBoundary:
+    properties:
+      created_at:
+        type: string
+      geojson_data:
+        type: string
+      id:
+        type: integer
+      nama_dusun:
+        type: string
+      warna:
+        type: string
+    type: object
+  main.GalleryInput:
+    properties:
+      caption:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+    required:
+    - images
+    type: object
+  main.GalleryItem:
+    properties:
+      caption:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+    type: object
+  main.Listing:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      koordinat:
+        type: string
+      nama:
+        type: string
+    type: object
+  main.ListingInput:
+    properties:
+      image_url:
+        type: string
+      koordinat:
+        type: string
+      nama:
+        type: string
+    required:
+    - koordinat
+    - nama
+    type: object
+  main.Penduduk:
+    properties:
+      agama:
+        type: string
+      alamat:
+        type: string
+      bisa_baca:
+        type: boolean
+      dataset_id:
+        type: integer
+      id:
+        type: integer
+      jenis_kelamin:
+        type: string
+      kedudukan_keluarga:
+        type: string
+      kewarganegaraan:
+        type: string
+      nama:
+        type: string
+      nik:
+        type: string
+      no_kk:
+        type: string
+      pekerjaan:
+        type: string
+      pend_terakhir:
+        type: string
+      status_kawin:
+        type: string
+      tanggal_lahir:
+        type: string
+      tempat_lahir:
+        type: string
+    type: object
+  main.PendudukDataset:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      nama_file:
+        type: string
+      tahun:
+        type: integer
+      total_records:
+        type: integer
+    type: object
+  main.ProdukDesa:
+    properties:
+      created_at:
+        type: string
+      deskripsi:
+        type: string
+      harga:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      kontak:
+        type: string
+      nama:
+        type: string
+      rating:
+        type: number
+    type: object
+  main.ProdukDesaInput:
+    properties:
+      deskripsi:
+        type: string
+      harga:
+        type: integer
+      image_url:
+        type: string
+      kontak:
+        type: string
+      nama:
+        type: string
+      rating:
+        type: number
+    required:
+    - harga
+    - kontak
+    - nama
+    type: object
+  main.SDGResponse:
+    properties:
+      average:
+        type: string
+      data:
+        items:
+          properties:
+            goals:
+              type: integer
+            image:
+              type: string
+            score:
+              type: number
+            title:
+              type: string
+          type: object
+        type: array
+      total_desa:
+        type: integer
+    type: object
+host: localhost:8081
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API server for Desa Puundoho Information System.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Puundoho API
+  version: "1.0"
+paths:
+  /apbdes:
+    get:
+      description: Get a list of all APBDes years
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.ApbdDesa'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List APBDes
+      tags:
+      - apbdes
+    post:
+      consumes:
+      - application/json
+      description: Create a new APBDes entry (Bendahara only)
+      parameters:
+      - description: APBDes Data
+        in: body
+        name: apbdes
+        required: true
+        schema:
+          $ref: '#/definitions/main.ApbdDesaInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.ApbdDesa'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create APBDes
+      tags:
+      - apbdes
+  /apbdes/{id}:
+    delete:
+      description: Delete an APBDes entry by ID (Bendahara only)
+      parameters:
+      - description: APBDes ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete APBDes
+      tags:
+      - apbdes
+  /apbdes/{id}/pendapatan:
+    get:
+      description: Get a list of pendapatan for a specific APBDes ID
+      parameters:
+      - description: APBDes ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.ApbdPendapatan'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Pendapatan
+      tags:
+      - apbdes
+  /apbdes/{id}/pengeluaran:
+    get:
+      description: Get a list of pengeluaran for a specific APBDes ID
+      parameters:
+      - description: APBDes ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.ApbdPengeluaran'
+              type: array
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Pengeluaran
+      tags:
+      - apbdes
+  /apbdes/pendapatan:
+    post:
+      consumes:
+      - application/json
+      description: Create a new pendapatan entry (Bendahara only)
+      parameters:
+      - description: Pendapatan Data
+        in: body
+        name: pendapatan
+        required: true
+        schema:
+          $ref: '#/definitions/main.ApbdPendapatanInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.ApbdPendapatan'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Pendapatan
+      tags:
+      - apbdes
+  /apbdes/pendapatan/{id}:
+    delete:
+      description: Delete a pendapatan entry by ID (Bendahara only)
+      parameters:
+      - description: Pendapatan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Pendapatan
+      tags:
+      - apbdes
+    put:
+      consumes:
+      - application/json
+      description: Update an existing pendapatan entry by ID (Bendahara only)
+      parameters:
+      - description: Pendapatan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: pendapatan
+        required: true
+        schema:
+          $ref: '#/definitions/main.ApbdPendapatanInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ApbdPendapatan'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Pendapatan
+      tags:
+      - apbdes
+  /apbdes/pengeluaran:
+    post:
+      consumes:
+      - application/json
+      description: Create a new pengeluaran entry (Bendahara only)
+      parameters:
+      - description: Pengeluaran Data
+        in: body
+        name: pengeluaran
+        required: true
+        schema:
+          $ref: '#/definitions/main.ApbdPengeluaranInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.ApbdPengeluaran'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Pengeluaran
+      tags:
+      - apbdes
+  /apbdes/pengeluaran/{id}:
+    delete:
+      description: Delete a pengeluaran entry by ID (Bendahara only)
+      parameters:
+      - description: Pengeluaran ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Pengeluaran
+      tags:
+      - apbdes
+    put:
+      consumes:
+      - application/json
+      description: Update an existing pengeluaran entry by ID (Bendahara only)
+      parameters:
+      - description: Pengeluaran ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: pengeluaran
+        required: true
+        schema:
+          $ref: '#/definitions/main.ApbdPengeluaranInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ApbdPengeluaran'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Pengeluaran
+      tags:
+      - apbdes
+  /articles:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of published articles. Use ?status=published to filter.
+        Leave empty to get all articles.
+      parameters:
+      - description: Filter by status (published/draft)
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Article'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List articles
+      tags:
+      - articles
+    post:
+      consumes:
+      - application/json
+      description: Create a new article (Admin only)
+      parameters:
+      - description: Article Data
+        in: body
+        name: article
+        required: true
+        schema:
+          $ref: '#/definitions/main.ArticleInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Article'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create article
+      tags:
+      - articles
+  /articles/{id}:
+    delete:
+      description: Delete an article by ID (Admin only)
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete article
+      tags:
+      - articles
+    get:
+      description: Get a single article by its ID
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Article'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an article
+      tags:
+      - articles
+    put:
+      consumes:
+      - application/json
+      description: Update an existing article by ID (Admin only)
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: article
+        required: true
+        schema:
+          $ref: '#/definitions/main.ArticleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Article'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update article
+      tags:
+      - articles
+  /dusun:
+    get:
+      description: Get a list of all dusun boundaries with GeoJSON data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.DusunBoundary'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Dusun Boundaries
+      tags:
+      - dusun
+    post:
+      consumes:
+      - application/json
+      description: Create a new dusun boundary (Admin only)
+      parameters:
+      - description: Dusun Data
+        in: body
+        name: dusun
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.DusunBoundary'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Dusun Boundary
+      tags:
+      - dusun
+  /dusun/{id}:
+    delete:
+      description: Delete a dusun boundary by ID (Admin only)
+      parameters:
+      - description: Dusun ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Dusun Boundary
+      tags:
+      - dusun
+    put:
+      consumes:
+      - application/json
+      description: Update an existing dusun boundary by ID (Admin only)
+      parameters:
+      - description: Dusun ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: dusun
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.DusunBoundary'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Dusun Boundary
+      tags:
+      - dusun
+  /galeri:
+    get:
+      description: Get a list of gallery items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.GalleryItem'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Gallery
+      tags:
+      - gallery
+    post:
+      consumes:
+      - application/json
+      description: Create a new gallery item (Admin only)
+      parameters:
+      - description: Gallery Data
+        in: body
+        name: galeri
+        required: true
+        schema:
+          $ref: '#/definitions/main.GalleryInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.GalleryItem'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Gallery Item
+      tags:
+      - gallery
+  /galeri/{id}:
+    delete:
+      description: Delete a gallery item by ID (Admin only)
+      parameters:
+      - description: Gallery ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Gallery Item
+      tags:
+      - gallery
+    get:
+      description: Get a single gallery item by ID
+      parameters:
+      - description: Gallery ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.GalleryItem'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Gallery Item
+      tags:
+      - gallery
+    put:
+      consumes:
+      - application/json
+      description: Update an existing gallery item (Admin only)
+      parameters:
+      - description: Gallery ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: galeri
+        required: true
+        schema:
+          $ref: '#/definitions/main.GalleryInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.GalleryItem'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Gallery Item
+      tags:
+      - gallery
+  /idm:
+    get:
+      description: Fetch live Index Desa Membangun (IDM) data directly from Kemendesa
+        API
+      parameters:
+      - description: 'Year of data (default: 2023)'
+        in: query
+        name: tahun
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Live IDM Data
+      tags:
+      - external
+  /listings:
+    get:
+      description: Get a list of location listings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Listing'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Listings
+      tags:
+      - listings
+    post:
+      consumes:
+      - application/json
+      description: Create a new listing (Admin only)
+      parameters:
+      - description: Listing Data
+        in: body
+        name: listing
+        required: true
+        schema:
+          $ref: '#/definitions/main.ListingInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Listing'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Listing
+      tags:
+      - listings
+  /listings/{id}:
+    delete:
+      description: Delete a listing by ID (Admin only)
+      parameters:
+      - description: Listing ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Listing
+      tags:
+      - listings
+    get:
+      description: Get a single listing by ID
+      parameters:
+      - description: Listing ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Listing'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Listing
+      tags:
+      - listings
+    put:
+      consumes:
+      - application/json
+      description: Update an existing listing by ID (Admin only)
+      parameters:
+      - description: Listing ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: listing
+        required: true
+        schema:
+          $ref: '#/definitions/main.ListingInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Listing'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Listing
+      tags:
+      - listings
+  /penduduk/datasets:
+    get:
+      description: Get a list of all population snapshots (years)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.PendudukDataset'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Population Datasets
+      tags:
+      - penduduk
+    post:
+      consumes:
+      - application/json
+      description: Initialize a new population year snapshot (Admin only)
+      parameters:
+      - description: Dataset Data
+        in: body
+        name: dataset
+        required: true
+        schema:
+          $ref: '#/definitions/main.PendudukDataset'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.PendudukDataset'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Population Dataset
+      tags:
+      - penduduk
+  /penduduk/datasets/{id}:
+    delete:
+      description: Remove a whole year's population data (Admin only)
+      parameters:
+      - description: Dataset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Population Dataset
+      tags:
+      - penduduk
+  /penduduk/datasets/{id}/bulk:
+    post:
+      consumes:
+      - application/json
+      description: Mass insert or update resident records for a dataset (Admin only)
+      parameters:
+      - description: Dataset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: List of residents
+        in: body
+        name: list
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/main.Penduduk'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Bulk Create Residents
+      tags:
+      - penduduk
+  /penduduk/datasets/{id}/records:
+    get:
+      description: Get all resident records for a specific year snapshot
+      parameters:
+      - description: Dataset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Penduduk'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Residents by Dataset
+      tags:
+      - penduduk
+  /penduduk/datasets/{id}/stats:
+    get:
+      description: Get aggregated population data for charts and graphs
+      parameters:
+      - description: Dataset ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+      summary: Get Population Statistics
+      tags:
+      - penduduk
+  /penduduk/records/{id}:
+    delete:
+      description: Remove a single resident record (Admin only)
+      parameters:
+      - description: Resident ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Resident Record
+      tags:
+      - penduduk
+    patch:
+      consumes:
+      - application/json
+      description: Update specific fields of a resident record (Admin only)
+      parameters:
+      - description: Resident ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Field Updates
+        in: body
+        name: updates
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Patch Resident Record
+      tags:
+      - penduduk
+  /produk-desa:
+    get:
+      description: Get a list of village products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.ProdukDesa'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Produk Desa
+      tags:
+      - produk
+    post:
+      consumes:
+      - application/json
+      description: Create a new village product (Bendahara only)
+      parameters:
+      - description: Produk Data
+        in: body
+        name: produk
+        required: true
+        schema:
+          $ref: '#/definitions/main.ProdukDesaInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.ProdukDesa'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Produk Desa
+      tags:
+      - produk
+  /produk-desa/{id}:
+    delete:
+      description: Delete a village product by ID (Bendahara only)
+      parameters:
+      - description: Produk ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Produk Desa
+      tags:
+      - produk
+    put:
+      consumes:
+      - application/json
+      description: Update an existing village product (Bendahara only)
+      parameters:
+      - description: Produk ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: produk
+        required: true
+        schema:
+          $ref: '#/definitions/main.ProdukDesaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ProdukDesa'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Produk Desa
+      tags:
+      - produk
+  /sdgs:
+    get:
+      description: Fetch live SDGs score data directly from Kemendesa API
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SDGResponse'
+        "502":
+          description: Bad Gateway
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Live SDGs Data
+      tags:
+      - external
+securityDefinitions:
+  ApiKeyAuth:
+    description: Paste your token with "Bearer " prefix (e.g. "Bearer <token>")
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

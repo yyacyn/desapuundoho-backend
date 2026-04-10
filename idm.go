@@ -9,6 +9,15 @@ import (
 )
 
 // GetLiveIDM handles fetching live IDM data directly from Kemendesa API
+// GetLiveIDM godoc
+// @Summary      Get Live IDM Data
+// @Description  Fetch live Index Desa Membangun (IDM) data directly from Kemendesa API
+// @Tags         external
+// @Produce      json
+// @Param        tahun  query     string  false  "Year of data (default: 2023)"
+// @Success      200    {object}  object
+// @Failure      502    {object}  map[string]string
+// @Router       /idm [get]
 func GetLiveIDM(c *gin.Context) {
 	// Izinkan parameter query tahun, contoh: /api/idm?tahun=2024
 	year := c.Query("tahun")

@@ -26,6 +26,14 @@ type ListingInput struct {
 // Handlers
 
 // GET /api/listings
+// listListingsHandler godoc
+// @Summary      List Listings
+// @Description  Get a list of location listings
+// @Tags         listings
+// @Produce      json
+// @Success      200  {object}  map[string][]Listing
+// @Failure      503  {object}  map[string]string
+// @Router       /listings [get]
 func listListingsHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -54,6 +62,15 @@ func listListingsHandler(c *gin.Context) {
 }
 
 // GET /api/listings/:id
+// getListingHandler godoc
+// @Summary      Get Listing
+// @Description  Get a single listing by ID
+// @Tags         listings
+// @Produce      json
+// @Param        id   path      int  true  "Listing ID"
+// @Success      200  {object}  Listing
+// @Failure      404  {object}  map[string]string
+// @Router       /listings/{id} [get]
 func getListingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -84,6 +101,17 @@ func getListingHandler(c *gin.Context) {
 }
 
 // POST /api/listings (protected)
+// createListingHandler godoc
+// @Summary      Create Listing
+// @Description  Create a new listing (Admin only)
+// @Tags         listings
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        listing  body      ListingInput  true  "Listing Data"
+// @Success      201      {object}  Listing
+// @Failure      400      {object}  map[string]string
+// @Router       /listings [post]
 func createListingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -113,6 +141,18 @@ func createListingHandler(c *gin.Context) {
 }
 
 // PUT /api/listings/:id (protected)
+// updateListingHandler godoc
+// @Summary      Update Listing
+// @Description  Update an existing listing by ID (Admin only)
+// @Tags         listings
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id       path      int           true  "Listing ID"
+// @Param        listing  body      ListingInput  true  "Update Data"
+// @Success      200      {object}  Listing
+// @Failure      404      {object}  map[string]string
+// @Router       /listings/{id} [put]
 func updateListingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -152,6 +192,15 @@ func updateListingHandler(c *gin.Context) {
 }
 
 // DELETE /api/listings/:id (protected)
+// deleteListingHandler godoc
+// @Summary      Delete Listing
+// @Description  Delete a listing by ID (Admin only)
+// @Tags         listings
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Listing ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /listings/{id} [delete]
 func deleteListingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})

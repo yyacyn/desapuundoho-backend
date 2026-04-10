@@ -148,6 +148,9 @@ CREATE TABLE IF NOT EXISTS bagan_organisasi (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- 9. IDM (Indeks Desa Membangun)
 CREATE TABLE IF NOT EXISTS idm (
     id SERIAL PRIMARY KEY,

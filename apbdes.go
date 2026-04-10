@@ -52,7 +52,14 @@ type ApbdPengeluaranInput struct {
 
 // --- APBDes Handlers ---
 
-// GET /api/apbdes — list all APBD years
+// listApbdesHandler godoc
+// @Summary      List APBDes
+// @Description  Get a list of all APBDes years
+// @Tags         apbdes
+// @Produce      json
+// @Success      200     {object}  map[string][]ApbdDesa
+// @Failure      503     {object}  map[string]string
+// @Router       /apbdes [get]
 func listApbdesHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -79,7 +86,17 @@ func listApbdesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"apbdes": list})
 }
 
-// POST /api/apbdes
+// createApbdesHandler godoc
+// @Summary      Create APBDes
+// @Description  Create a new APBDes entry (Bendahara only)
+// @Tags         apbdes
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        apbdes  body      ApbdDesaInput  true  "APBDes Data"
+// @Success      201     {object}  ApbdDesa
+// @Failure      400     {object}  map[string]string
+// @Router       /apbdes [post]
 func createApbdesHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -108,7 +125,15 @@ func createApbdesHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, a)
 }
 
-// DELETE /api/apbdes/:id
+// deleteApbdesHandler godoc
+// @Summary      Delete APBDes
+// @Description  Delete an APBDes entry by ID (Bendahara only)
+// @Tags         apbdes
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "APBDes ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /apbdes/{id} [delete]
 func deleteApbdesHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -138,7 +163,15 @@ func deleteApbdesHandler(c *gin.Context) {
 
 // --- Pendapatan Handlers ---
 
-// GET /api/apbdes/:id/pendapatan
+// listPendapatanHandler godoc
+// @Summary      List Pendapatan
+// @Description  Get a list of pendapatan for a specific APBDes ID
+// @Tags         apbdes
+// @Produce      json
+// @Param        id   path      int  true  "APBDes ID"
+// @Success      200  {object}  map[string][]ApbdPendapatan
+// @Failure      400  {object}  map[string]string
+// @Router       /apbdes/{id}/pendapatan [get]
 func listPendapatanHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -171,7 +204,17 @@ func listPendapatanHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"pendapatan": list})
 }
 
-// POST /api/apbdes/pendapatan
+// createPendapatanHandler godoc
+// @Summary      Create Pendapatan
+// @Description  Create a new pendapatan entry (Bendahara only)
+// @Tags         apbdes
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        pendapatan  body      ApbdPendapatanInput  true  "Pendapatan Data"
+// @Success      201         {object}  ApbdPendapatan
+// @Failure      400         {object}  map[string]string
+// @Router       /apbdes/pendapatan [post]
 func createPendapatanHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -203,7 +246,18 @@ func createPendapatanHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, p)
 }
 
-// PUT /api/apbdes/pendapatan/:id
+// updatePendapatanHandler godoc
+// @Summary      Update Pendapatan
+// @Description  Update an existing pendapatan entry by ID (Bendahara only)
+// @Tags         apbdes
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id          path      int                  true  "Pendapatan ID"
+// @Param        pendapatan  body      ApbdPendapatanInput  true  "Update Data"
+// @Success      200         {object}  ApbdPendapatan
+// @Failure      404         {object}  map[string]string
+// @Router       /apbdes/pendapatan/{id} [put]
 func updatePendapatanHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -242,7 +296,15 @@ func updatePendapatanHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, p)
 }
 
-// DELETE /api/apbdes/pendapatan/:id
+// deletePendapatanHandler godoc
+// @Summary      Delete Pendapatan
+// @Description  Delete a pendapatan entry by ID (Bendahara only)
+// @Tags         apbdes
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Pendapatan ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /apbdes/pendapatan/{id} [delete]
 func deletePendapatanHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -280,7 +342,15 @@ func deletePendapatanHandler(c *gin.Context) {
 
 // --- Pengeluaran Handlers ---
 
-// GET /api/apbdes/:id/pengeluaran
+// listPengeluaranHandler godoc
+// @Summary      List Pengeluaran
+// @Description  Get a list of pengeluaran for a specific APBDes ID
+// @Tags         apbdes
+// @Produce      json
+// @Param        id   path      int  true  "APBDes ID"
+// @Success      200  {object}  map[string][]ApbdPengeluaran
+// @Failure      400  {object}  map[string]string
+// @Router       /apbdes/{id}/pengeluaran [get]
 func listPengeluaranHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -313,7 +383,17 @@ func listPengeluaranHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"pengeluaran": list})
 }
 
-// POST /api/apbdes/pengeluaran
+// createPengeluaranHandler godoc
+// @Summary      Create Pengeluaran
+// @Description  Create a new pengeluaran entry (Bendahara only)
+// @Tags         apbdes
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        pengeluaran  body      ApbdPengeluaranInput  true  "Pengeluaran Data"
+// @Success      201          {object}  ApbdPengeluaran
+// @Failure      400          {object}  map[string]string
+// @Router       /apbdes/pengeluaran [post]
 func createPengeluaranHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -343,7 +423,18 @@ func createPengeluaranHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, p)
 }
 
-// PUT /api/apbdes/pengeluaran/:id
+// updatePengeluaranHandler godoc
+// @Summary      Update Pengeluaran
+// @Description  Update an existing pengeluaran entry by ID (Bendahara only)
+// @Tags         apbdes
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id           path      int                   true  "Pengeluaran ID"
+// @Param        pengeluaran  body      ApbdPengeluaranInput  true  "Update Data"
+// @Success      200          {object}  ApbdPengeluaran
+// @Failure      404          {object}  map[string]string
+// @Router       /apbdes/pengeluaran/{id} [put]
 func updatePengeluaranHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -382,7 +473,15 @@ func updatePengeluaranHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, p)
 }
 
-// DELETE /api/apbdes/pengeluaran/:id
+// deletePengeluaranHandler godoc
+// @Summary      Delete Pengeluaran
+// @Description  Delete a pengeluaran entry by ID (Bendahara only)
+// @Tags         apbdes
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Pengeluaran ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /apbdes/pengeluaran/{id} [delete]
 func deletePengeluaranHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
