@@ -109,6 +109,8 @@ func main() {
 		api.GET("/produk-desa", listProdukDesaHandler)
 		api.GET("/bansos", listBansosHandler)
 		api.GET("/bansos/:id", getBansosHandler)
+		api.GET("/stunting", listStuntingHandler)
+		api.GET("/stunting/:id", getStuntingHandler)
 		api.GET("/apbdes", listApbdesHandler)
 		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
 		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
@@ -150,6 +152,11 @@ func main() {
 			adminOnly.PATCH("/penduduk/records/:id", patchPendudukHandler)
 			adminOnly.POST("/penduduk/datasets/:id/bulk", bulkCreatePendudukHandler)
 			adminOnly.DELETE("/penduduk/records/:id", deleteRecordHandler)
+
+			// Stunting (Admin Only)
+			adminOnly.POST("/stunting", createStuntingHandler)
+			adminOnly.PUT("/stunting/:id", updateStuntingHandler)
+			adminOnly.DELETE("/stunting/:id", deleteStuntingHandler)
 		}
 
 		// ImageKit auth (server-side signing for secure uploads)
@@ -157,15 +164,6 @@ func main() {
 
 		// PDF Parser (for APBDes import)
 		protected.POST("/apbdes/parse-pdf", parsePDFHandler)
-
-		// Bansos routes (Admin and Bendahara)
-		bansosEditor := protected.Group("")
-		bansosEditor.Use(RoleMiddleware("admin", "bendahara"))
-		{
-			bansosEditor.POST("/bansos", createBansosHandler)
-			bansosEditor.PUT("/bansos/:id", updateBansosHandler)
-			bansosEditor.DELETE("/bansos/:id", deleteBansosHandler)
-		}
 
 		// Bendahara routes
 		bendahara := protected.Group("")
@@ -175,6 +173,11 @@ func main() {
 			bendahara.POST("/produk-desa", createProdukDesaHandler)
 			bendahara.PUT("/produk-desa/:id", updateProdukDesaHandler)
 			bendahara.DELETE("/produk-desa/:id", deleteProdukDesaHandler)
+
+			// Bansos
+			bendahara.POST("/bansos", createBansosHandler)
+			bendahara.PUT("/bansos/:id", updateBansosHandler)
+			bendahara.DELETE("/bansos/:id", deleteBansosHandler)
 
 			// APBDes
 			bendahara.POST("/apbdes", createApbdesHandler)
