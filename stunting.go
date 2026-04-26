@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Data Types
 type Stunting struct {
 	ID                 int      `json:"id"`
 	NikAnak            string   `json:"nik_anak"`
@@ -37,6 +38,17 @@ type StuntingInput struct {
 	TanggalPemeriksaan string `json:"tanggal_pemeriksaan"`
 }
 
+// Handlers
+
+// GET /api/stunting
+// listStuntingHandler godoc
+// @Summary      List Stunting
+// @Description  Get a list of stunting data
+// @Tags         stunting
+// @Produce      json
+// @Success      200  {object}  map[string][]Stunting
+// @Failure      503  {object}  map[string]string
+// @Router       /stunting [get]
 func listStuntingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -97,6 +109,16 @@ func listStuntingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"stunting": list})
 }
 
+// GET /api/stunting/:id
+// getStuntingHandler godoc
+// @Summary      Get Stunting Data
+// @Description  Get a single stunting data by ID
+// @Tags         stunting
+// @Produce      json
+// @Param        id   path      int  true  "Stunting ID"
+// @Success      200  {object}  Stunting
+// @Failure      404  {object}  map[string]string
+// @Router       /stunting/{id} [get]
 func getStuntingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -131,6 +153,18 @@ func getStuntingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, item)
 }
 
+// POST /api/stunting (protected)
+// createStuntingHandler godoc
+// @Summary      Create Stunting Data
+// @Description  Create a new stunting data (Admin only)
+// @Tags         stunting
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        stunting  body      StuntingInput  true  "Stunting Data"
+// @Success      201     {object}  Stunting
+// @Failure      400     {object}  map[string]string
+// @Router       /stunting [post]
 func createStuntingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -213,6 +247,19 @@ func createStuntingHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, created)
 }
 
+// PUT /api/stunting/:id (protected)
+// updateStuntingHandler godoc
+// @Summary      Update Stunting Data
+// @Description  Update an existing stunting data (Admin only)
+// @Tags         stunting
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id      path      int           true  "Stunting ID"
+// @Param        stunting  body      StuntingInput  true  "Update Data"
+// @Success      200     {object}  Stunting
+// @Failure      404     {object}  map[string]string
+// @Router       /stunting/{id} [put]
 func updateStuntingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -308,6 +355,16 @@ func updateStuntingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, updated)
 }
 
+// DELETE /api/stunting/:id (protected)
+// deleteStuntingHandler godoc
+// @Summary      Delete Stunting Data
+// @Description  Delete a stunting data by ID (Admin only)
+// @Tags         stunting
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Stunting ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /stunting/{id} [delete]
 func deleteStuntingHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -335,6 +392,7 @@ func deleteStuntingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Data stunting berhasil dihapus"})
 }
 
+// Helper function to scan a stunting row into a Stunting struct
 func scanStuntingRow(row scanner) (Stunting, error) {
 	var item Stunting
 	var tinggi sql.NullFloat64
@@ -381,6 +439,7 @@ type scanner interface {
 	Scan(dest ...interface{}) error
 }
 
+// Helper function to parse optional float values from strings
 func parseOptionalFloat(value string) (*float64, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
@@ -395,6 +454,7 @@ func parseOptionalFloat(value string) (*float64, error) {
 	return &parsed, nil
 }
 
+// Helper function to calculate age in months from birth date string (YYYY-MM-DD)
 func calculateAgeMonths(dateString string) int {
 	if strings.TrimSpace(dateString) == "" {
 		return 0

@@ -91,12 +91,23 @@ CREATE INDEX IF NOT EXISTS idx_penduduk_nik ON penduduk(nik);
 CREATE INDEX IF NOT EXISTS idx_penduduk_dataset_id ON penduduk(dataset_id);
 
 -- 5. Pengaduan (Complaints)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'pengaduan_status_enum'
+    ) THEN
+        CREATE TYPE pengaduan_status_enum AS ENUM ('submitted', 'responded');
+    END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS pengaduan (
     id SERIAL PRIMARY KEY,
     id_app_user INT NOT NULL REFERENCES app_users(id) ON DELETE CASCADE,
     pengaduan TEXT NOT NULL,
     foto_url VARCHAR(500),
-    status VARCHAR(50) NOT NULL DEFAULT 'menunggu',
+    status pengaduan_status_enum NOT NULL DEFAULT 'submitted',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

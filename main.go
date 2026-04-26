@@ -114,6 +114,11 @@ func main() {
 		api.GET("/apbdes", listApbdesHandler)
 		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
 		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
+
+		// Public Pengaduan endpoints
+		api.GET("/pengaduan", listPengaduanHandler)
+		api.GET("/pengaduan/:id", getPengaduanHandler)
+		api.POST("/pengaduan", createPengaduanHandler)
 	}
 
 	// Protected routes (require JWT)

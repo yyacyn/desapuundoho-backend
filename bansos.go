@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Data types
 type Bansos struct {
 	ID                int    `json:"id"`
 	NamaProgram       string `json:"nama_program"`
@@ -30,6 +31,17 @@ type BansosInput struct {
 	Keterangan        string `json:"keterangan"`
 }
 
+// Handlers
+
+// GET /api/bansos
+// listBansosHandler godoc
+// @Summary      List Bansos
+// @Description  Get a list of social assistance records
+// @Tags         bansos
+// @Produce      json
+// @Success      200  {object}  map[string][]Bansos
+// @Failure      503  {object}  map[string]string
+// @Router       /bansos [get]
 func listBansosHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -95,6 +107,16 @@ func listBansosHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"bansos": list})
 }
 
+// GET /api/bansos/:id
+// getBansosHandler godoc
+// @Summary      Get Bansos Item
+// @Description  Get a single bansos item by ID
+// @Tags         bansos
+// @Produce      json
+// @Param        id   path      int  true  "Bansos ID"
+// @Success      200  {object}  Bansos
+// @Failure      404  {object}  map[string]string
+// @Router       /bansos/{id} [get]
 func getBansosHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -138,6 +160,18 @@ func getBansosHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, b)
 }
 
+// POST /api/bansos (protected)
+// createBansosHandler godoc
+// @Summary      Create Bansos Item
+// @Description  Create a new bansos item (Admin only)
+// @Tags         bansos
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        bansos  body      BansosInput  true  "Bansos Data"
+// @Success      201     {object}  Bansos
+// @Failure      400     {object}  map[string]string
+// @Router       /bansos [post]
 func createBansosHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -195,6 +229,19 @@ func createBansosHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, b)
 }
 
+// PUT /api/bansos/:id (protected)
+// updateBansosHandler godoc
+// @Summary      Update Bansos Item
+// @Description  Update an existing bansos item (Admin only)
+// @Tags         bansos
+// @Accept       json
+// @Produce      json
+// @Security     ApiKeyAuth
+// @Param        id      path      int           true  "Bansos ID"
+// @Param        bansos  body      BansosInput  true  "Update Data"
+// @Success      200     {object}  Bansos
+// @Failure      404     {object}  map[string]string
+// @Router       /bansos/{id} [put]
 func updateBansosHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
@@ -265,6 +312,16 @@ func updateBansosHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, b)
 }
 
+// DELETE /api/bansos/:id (protected)
+// deleteBansosHandler godoc
+// @Summary      Delete Bansos Item
+// @Description  Delete a bansos item by ID (Admin only)
+// @Tags         bansos
+// @Security     ApiKeyAuth
+// @Param        id   path      int  true  "Bansos ID"
+// @Success      200  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /bansos/{id} [delete]
 func deleteBansosHandler(c *gin.Context) {
 	if DB == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database unavailable"})
