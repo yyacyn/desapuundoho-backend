@@ -5,9 +5,10 @@ import (
 	"os"
 	"time"
 
+	_ "desapuundoho-backend/docs"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	_ "desapuundoho-backend/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -24,7 +25,7 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host      
+// @host
 // @BasePath  /api
 
 // @securityDefinitions.apikey  ApiKeyAuth
@@ -109,6 +110,11 @@ func main() {
 		api.GET("/apbdes", listApbdesHandler)
 		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
 		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
+
+		// Public Pengaduan endpoints
+		api.GET("/pengaduan", listPengaduanHandler)
+		api.GET("/pengaduan/:id", getPengaduanHandler)
+		api.POST("/pengaduan", createPengaduanHandler)
 	}
 
 	// Protected routes (require JWT)

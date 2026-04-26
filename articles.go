@@ -33,7 +33,6 @@ type ArticleInput struct {
 	Slug       string `json:"slug" binding:"required"`
 }
 
-
 // Handlers
 // listArticlesHandler godoc
 // @Summary      List articles
