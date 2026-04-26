@@ -107,6 +107,8 @@ func main() {
 
 		// Public reads for APBDes and Produk
 		api.GET("/produk-desa", listProdukDesaHandler)
+		api.GET("/bansos", listBansosHandler)
+		api.GET("/bansos/:id", getBansosHandler)
 		api.GET("/apbdes", listApbdesHandler)
 		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
 		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
@@ -160,6 +162,15 @@ func main() {
 
 		// PDF Parser (for APBDes import)
 		protected.POST("/apbdes/parse-pdf", parsePDFHandler)
+
+		// Bansos routes (Admin and Bendahara)
+		bansosEditor := protected.Group("")
+		bansosEditor.Use(RoleMiddleware("admin", "bendahara"))
+		{
+			bansosEditor.POST("/bansos", createBansosHandler)
+			bansosEditor.PUT("/bansos/:id", updateBansosHandler)
+			bansosEditor.DELETE("/bansos/:id", deleteBansosHandler)
+		}
 
 		// Bendahara routes
 		bendahara := protected.Group("")
