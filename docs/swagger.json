@@ -759,6 +759,219 @@
                 }
             }
         },
+        "/bansos": {
+            "get": {
+                "description": "Get a list of social assistance records",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bansos"
+                ],
+                "summary": "List Bansos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/main.Bansos"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new bansos item (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bansos"
+                ],
+                "summary": "Create Bansos Item",
+                "parameters": [
+                    {
+                        "description": "Bansos Data",
+                        "name": "bansos",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.BansosInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.Bansos"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/bansos/{id}": {
+            "get": {
+                "description": "Get a single bansos item by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bansos"
+                ],
+                "summary": "Get Bansos Item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Bansos ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Bansos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing bansos item (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bansos"
+                ],
+                "summary": "Update Bansos Item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Bansos ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Data",
+                        "name": "bansos",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.BansosInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Bansos"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a bansos item by ID (Admin only)",
+                "tags": [
+                    "bansos"
+                ],
+                "summary": "Delete Bansos Item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Bansos ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/dusun": {
             "get": {
                 "description": "Get a list of all dusun boundaries with GeoJSON data",
@@ -1956,6 +2169,219 @@
                     }
                 }
             }
+        },
+        "/stunting": {
+            "get": {
+                "description": "Get a list of stunting data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stunting"
+                ],
+                "summary": "List Stunting",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/main.Stunting"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new stunting data (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stunting"
+                ],
+                "summary": "Create Stunting Data",
+                "parameters": [
+                    {
+                        "description": "Stunting Data",
+                        "name": "stunting",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.StuntingInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.Stunting"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stunting/{id}": {
+            "get": {
+                "description": "Get a single stunting data by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stunting"
+                ],
+                "summary": "Get Stunting Data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Stunting ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Stunting"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing stunting data (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stunting"
+                ],
+                "summary": "Update Stunting Data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Stunting ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Data",
+                        "name": "stunting",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.StuntingInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Stunting"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a stunting data by ID (Admin only)",
+                "tags": [
+                    "stunting"
+                ],
+                "summary": "Delete Stunting Data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Stunting ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2133,6 +2559,69 @@
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.Bansos": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "lokasi_dusun": {
+                    "type": "string"
+                },
+                "nama_penerima": {
+                    "type": "string"
+                },
+                "nama_program": {
+                    "type": "string"
+                },
+                "nik_penerima": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tanggal_penyaluran": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.BansosInput": {
+            "type": "object",
+            "required": [
+                "lokasi_dusun",
+                "nama_penerima",
+                "nama_program"
+            ],
+            "properties": {
+                "keterangan": {
+                    "type": "string"
+                },
+                "lokasi_dusun": {
+                    "type": "string"
+                },
+                "nama_penerima": {
+                    "type": "string"
+                },
+                "nama_program": {
+                    "type": "string"
+                },
+                "nik_penerima": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tanggal_penyaluran": {
                     "type": "string"
                 }
             }
@@ -2390,6 +2879,80 @@
                 },
                 "total_desa": {
                     "type": "integer"
+                }
+            }
+        },
+        "main.Stunting": {
+            "type": "object",
+            "properties": {
+                "berat_badan": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "dusun": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lokasi_dusun": {
+                    "type": "string"
+                },
+                "nama_anak": {
+                    "type": "string"
+                },
+                "nik_anak": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tanggal_lahir": {
+                    "type": "string"
+                },
+                "tanggal_pemeriksaan": {
+                    "type": "string"
+                },
+                "tinggi_badan": {
+                    "type": "number"
+                },
+                "umur_bulan": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.StuntingInput": {
+            "type": "object",
+            "required": [
+                "lokasi_dusun",
+                "nama_anak"
+            ],
+            "properties": {
+                "berat_badan": {
+                    "type": "string"
+                },
+                "lokasi_dusun": {
+                    "type": "string"
+                },
+                "nama_anak": {
+                    "type": "string"
+                },
+                "nik_anak": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tanggal_lahir": {
+                    "type": "string"
+                },
+                "tanggal_pemeriksaan": {
+                    "type": "string"
+                },
+                "tinggi_badan": {
+                    "type": "string"
                 }
             }
         }

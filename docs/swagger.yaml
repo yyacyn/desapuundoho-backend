@@ -118,6 +118,48 @@ definitions:
     - slug
     - title
     type: object
+  main.Bansos:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      keterangan:
+        type: string
+      lokasi_dusun:
+        type: string
+      nama_penerima:
+        type: string
+      nama_program:
+        type: string
+      nik_penerima:
+        type: string
+      status:
+        type: string
+      tanggal_penyaluran:
+        type: string
+    type: object
+  main.BansosInput:
+    properties:
+      keterangan:
+        type: string
+      lokasi_dusun:
+        type: string
+      nama_penerima:
+        type: string
+      nama_program:
+        type: string
+      nik_penerima:
+        type: string
+      status:
+        type: string
+      tanggal_penyaluran:
+        type: string
+    required:
+    - lokasi_dusun
+    - nama_penerima
+    - nama_program
+    type: object
   main.DusunBoundary:
     properties:
       created_at:
@@ -285,6 +327,55 @@ definitions:
         type: array
       total_desa:
         type: integer
+    type: object
+  main.Stunting:
+    properties:
+      berat_badan:
+        type: number
+      created_at:
+        type: string
+      dusun:
+        type: string
+      id:
+        type: integer
+      lokasi_dusun:
+        type: string
+      nama_anak:
+        type: string
+      nik_anak:
+        type: string
+      status:
+        type: string
+      tanggal_lahir:
+        type: string
+      tanggal_pemeriksaan:
+        type: string
+      tinggi_badan:
+        type: number
+      umur_bulan:
+        type: integer
+    type: object
+  main.StuntingInput:
+    properties:
+      berat_badan:
+        type: string
+      lokasi_dusun:
+        type: string
+      nama_anak:
+        type: string
+      nik_anak:
+        type: string
+      status:
+        type: string
+      tanggal_lahir:
+        type: string
+      tanggal_pemeriksaan:
+        type: string
+      tinggi_badan:
+        type: string
+    required:
+    - lokasi_dusun
+    - nama_anak
     type: object
 info:
   contact:
@@ -775,6 +866,143 @@ paths:
       summary: Update article
       tags:
       - articles
+  /bansos:
+    get:
+      description: Get a list of social assistance records
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Bansos'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Bansos
+      tags:
+      - bansos
+    post:
+      consumes:
+      - application/json
+      description: Create a new bansos item (Admin only)
+      parameters:
+      - description: Bansos Data
+        in: body
+        name: bansos
+        required: true
+        schema:
+          $ref: '#/definitions/main.BansosInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Bansos'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Bansos Item
+      tags:
+      - bansos
+  /bansos/{id}:
+    delete:
+      description: Delete a bansos item by ID (Admin only)
+      parameters:
+      - description: Bansos ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Bansos Item
+      tags:
+      - bansos
+    get:
+      description: Get a single bansos item by ID
+      parameters:
+      - description: Bansos ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Bansos'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Bansos Item
+      tags:
+      - bansos
+    put:
+      consumes:
+      - application/json
+      description: Update an existing bansos item (Admin only)
+      parameters:
+      - description: Bansos ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: bansos
+        required: true
+        schema:
+          $ref: '#/definitions/main.BansosInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Bansos'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Bansos Item
+      tags:
+      - bansos
   /dusun:
     get:
       description: Get a list of all dusun boundaries with GeoJSON data
@@ -1545,6 +1773,143 @@ paths:
       summary: Get Live SDGs Data
       tags:
       - external
+  /stunting:
+    get:
+      description: Get a list of stunting data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Stunting'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List Stunting
+      tags:
+      - stunting
+    post:
+      consumes:
+      - application/json
+      description: Create a new stunting data (Admin only)
+      parameters:
+      - description: Stunting Data
+        in: body
+        name: stunting
+        required: true
+        schema:
+          $ref: '#/definitions/main.StuntingInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Stunting'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Create Stunting Data
+      tags:
+      - stunting
+  /stunting/{id}:
+    delete:
+      description: Delete a stunting data by ID (Admin only)
+      parameters:
+      - description: Stunting ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Stunting Data
+      tags:
+      - stunting
+    get:
+      description: Get a single stunting data by ID
+      parameters:
+      - description: Stunting ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Stunting'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Stunting Data
+      tags:
+      - stunting
+    put:
+      consumes:
+      - application/json
+      description: Update an existing stunting data (Admin only)
+      parameters:
+      - description: Stunting ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Data
+        in: body
+        name: stunting
+        required: true
+        schema:
+          $ref: '#/definitions/main.StuntingInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Stunting'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Stunting Data
+      tags:
+      - stunting
 securityDefinitions:
   ApiKeyAuth:
     description: Paste your token with "Bearer " prefix (e.g. "Bearer <token>")
