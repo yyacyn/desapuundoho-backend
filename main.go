@@ -93,6 +93,9 @@ func main() {
 		api.GET("/galeri", listGalleryHandler)
 		api.GET("/galeri/:id", getGalleryHandler)
 
+		// ImageKit auth for client uploads (public because pengaduan uploads are unauthenticated)
+		api.GET("/imagekit/auth", imagekitAuthHandler)
+
 		// Public Dusun boundary read endpoint
 		api.GET("/dusun", listDusunHandler)
 
@@ -119,6 +122,11 @@ func main() {
 		api.GET("/pengaduan", listPengaduanHandler)
 		api.GET("/pengaduan/:id", getPengaduanHandler)
 		api.POST("/pengaduan", createPengaduanHandler)
+
+		// Public Pengajuan endpoints
+		api.GET("/pengajuan", listPengajuanHandler)
+		api.GET("/pengajuan/:id", getPengajuanHandler)
+		api.POST("/pengajuan", createPengajuanHandler)
 	}
 
 	// Protected routes (require JWT)
@@ -151,6 +159,12 @@ func main() {
 			adminOnly.PUT("/dusun/:id", updateDusunHandler)
 			adminOnly.DELETE("/dusun/:id", deleteDusunHandler)
 
+			// Pengaduan (Admin Only - Update Status)
+			adminOnly.PATCH("/pengaduan/:id/status", updatePengaduanStatusHandler)
+
+			// Pengajuan (Admin Only - Update Status)
+			adminOnly.PATCH("/pengajuan/:id/status", updatePengajuanStatusHandler)
+
 			// Data Penduduk (Admin Only)
 			adminOnly.POST("/penduduk/datasets", createDatasetHandler)
 			adminOnly.DELETE("/penduduk/datasets/:id", deleteDatasetHandler)
@@ -165,7 +179,7 @@ func main() {
 		}
 
 		// ImageKit auth (server-side signing for secure uploads)
-		protected.GET("/imagekit/auth", imagekitAuthHandler)
+		// protected.GET("/imagekit/auth", imagekitAuthHandler)
 
 		// PDF Parser (for APBDes import)
 		protected.POST("/apbdes/parse-pdf", parsePDFHandler)
