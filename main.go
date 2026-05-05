@@ -119,6 +119,8 @@ func main() {
 		api.GET("/apbdes", listApbdesHandler)
 		api.GET("/apbdes/:id/pendapatan", listPendapatanHandler)
 		api.GET("/apbdes/:id/pengeluaran", listPengeluaranHandler)
+		api.GET("/struktur-organisasi", listStrukturOrganisasiHandler)
+		api.GET("/struktur-organisasi/:id", getStrukturOrganisasiHandler)
 
 		// Public Pengaduan endpoints
 		api.GET("/pengaduan", listPengaduanHandler)
@@ -155,6 +157,11 @@ func main() {
 			adminOnly.POST("/galeri", createGalleryHandler)
 			adminOnly.PUT("/galeri/:id", updateGalleryHandler)
 			adminOnly.DELETE("/galeri/:id", deleteGalleryHandler)
+
+			// Struktur Organisasi
+			adminOnly.POST("/struktur-organisasi", createStrukturOrganisasiHandler)
+			adminOnly.PUT("/struktur-organisasi/:id", updateStrukturOrganisasiHandler)
+			adminOnly.DELETE("/struktur-organisasi/:id", deleteStrukturOrganisasiHandler)
 
 			// Dusun Boundaries
 			adminOnly.POST("/dusun", createDusunHandler)
@@ -229,11 +236,13 @@ func main() {
 	log.Printf("   - GET  http://localhost:%s/api/articles", port)
 	log.Printf("   - GET  http://localhost:%s/api/listings", port)
 	log.Printf("   - GET  http://localhost:%s/api/galeri", port)
+	log.Printf("   - GET  http://localhost:%s/api/struktur-organisasi", port)
 	log.Printf("📍 Protected endpoints (JWT required):")
 	log.Printf("   - GET  http://localhost:%s/api/auth/me", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/articles", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/listings", port)
 	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/galeri", port)
+	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/struktur-organisasi", port)
 	log.Printf("   - GET  http://localhost:%s/api/imagekit/auth", port)
 
 	if err := router.Run(":" + port); err != nil {
