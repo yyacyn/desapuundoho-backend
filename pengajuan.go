@@ -40,11 +40,11 @@ type PengajuanInput struct {
 // Handlers
 // listPengajuanHandler godoc
 // @Summary      List pengajuan
-// @Description  Get a list of submitted requests
+// @Description  Get a list of requests. Use ?status=Baru, Ditinjau, Disetujui, or Ditolak to filter. Leave empty to get all requests.
 // @Tags         pengajuan
 // @Accept       json
 // @Produce      json
-// @Param        status  query     string  false  "Filter by status"
+// @Param        status  query     string  false  "Filter by request status"
 // @Success      200     {object}  map[string][]Pengajuan
 // @Failure      503     {object}  map[string]string
 // @Router       /pengajuan [get]
@@ -94,6 +94,7 @@ func listPengajuanHandler(c *gin.Context) {
 // @Success      200  {object}  Pengajuan
 // @Failure      400  {object}  map[string]string
 // @Failure      404  {object}  map[string]string
+// @Failure      503  {object}  map[string]string
 // @Router       /pengajuan/{id} [get]
 
 func getPengajuanHandler(c *gin.Context) {
@@ -127,13 +128,14 @@ func getPengajuanHandler(c *gin.Context) {
 
 // createPengajuanHandler godoc
 // @Summary      Create request
-// @Description  Create a new request
+// @Description  Create a new request submission
 // @Tags         pengajuan
 // @Accept       json
 // @Produce      json
 // @Param        pengajuan  body      PengajuanInput  true  "Request Data"
 // @Success      201      {object}  Pengajuan
 // @Failure      400      {object}  map[string]string
+// @Failure      503      {object}  map[string]string
 // @Router       /pengajuan [post]
 
 func createPengajuanHandler(c *gin.Context) {
@@ -180,6 +182,7 @@ func createPengajuanHandler(c *gin.Context) {
 // @Success      200       {object}  Pengajuan
 // @Failure      400       {object}  map[string]string
 // @Failure      404       {object}  map[string]string
+// @Failure      503       {object}  map[string]string
 // @Router       /pengajuan/{id}/status [patch]
 
 func updatePengajuanStatusHandler(c *gin.Context) {

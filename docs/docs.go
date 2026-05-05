@@ -994,6 +994,234 @@ const docTemplate = `{
                 }
             }
         },
+        "/pengajuan": {
+            "get": {
+                "description": "Get a list of requests. Use ?status=Baru, Ditinjau, Disetujui, or Ditolak to filter. Leave empty to get all requests.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengajuan"
+                ],
+                "summary": "List pengajuan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by request status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/main.Pengajuan"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new request submission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengajuan"
+                ],
+                "summary": "Create request",
+                "parameters": [
+                    {
+                        "description": "Request Data",
+                        "name": "pengajuan",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.PengajuanInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.Pengajuan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pengajuan/{id}": {
+            "get": {
+                "description": "Get a single request by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengajuan"
+                ],
+                "summary": "Get a request",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Request ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Pengajuan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pengajuan/{id}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update status and keterangan of a pengajuan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pengajuan"
+                ],
+                "summary": "Update Pengajuan Status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pengajuan ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Status and optional Keterangan",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.Pengajuan"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bansos": {
             "get": {
                 "description": "Get a list of social assistance records",
@@ -2852,6 +3080,85 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "foto_url": {
+                    "type": "string"
+                },
+                "isi": {
+                    "type": "string"
+                },
+                "judul": {
+                    "type": "string"
+                },
+                "kategori": {
+                    "type": "string"
+                },
+                "lokasi": {
+                    "type": "string"
+                },
+                "nama": {
+                    "type": "string"
+                },
+                "nomor_telp": {
+                    "type": "string"
+                },
+                "tanggal": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.Pengajuan": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "dokumen_url": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isi": {
+                    "type": "string"
+                },
+                "judul": {
+                    "type": "string"
+                },
+                "kategori": {
+                    "type": "string"
+                },
+                "keterangan": {
+                    "type": "string"
+                },
+                "lokasi": {
+                    "type": "string"
+                },
+                "nama": {
+                    "type": "string"
+                },
+                "nomor_telp": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tanggal": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.PengajuanInput": {
+            "type": "object",
+            "properties": {
+                "dokumen_url": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "isi": {
