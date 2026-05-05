@@ -118,6 +118,58 @@ definitions:
     - slug
     - title
     type: object
+  main.Pengaduan:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      foto_url:
+        type: string
+      id:
+        type: integer
+      isi:
+        type: string
+      judul:
+        type: string
+      kategori:
+        type: string
+      keterangan:
+        type: string
+      lokasi:
+        type: string
+      nama:
+        type: string
+      nomor_telp:
+        type: string
+      status:
+        type: string
+      tanggal:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  main.PengaduanInput:
+    properties:
+      email:
+        type: string
+      foto_url:
+        type: string
+      isi:
+        type: string
+      judul:
+        type: string
+      kategori:
+        type: string
+      lokasi:
+        type: string
+      nama:
+        type: string
+      nomor_telp:
+        type: string
+      tanggal:
+        type: string
+    type: object
   main.Bansos:
     properties:
       created_at:
@@ -866,6 +918,156 @@ paths:
       summary: Update article
       tags:
       - articles
+  /pengaduan:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of complaints. Use ?status=Baru, Ditinjau, Diproses,
+        Selesai, or Ditolak to filter. Leave empty to get all complaints.
+      parameters:
+      - description: Filter by complaint status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/main.Pengaduan'
+              type: array
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List pengaduan
+      tags:
+      - pengaduan
+    post:
+      consumes:
+      - application/json
+      description: Create a new complaint submission
+      parameters:
+      - description: Complaint Data
+        in: body
+        name: pengaduan
+        required: true
+        schema:
+          $ref: '#/definitions/main.PengaduanInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.Pengaduan'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create complaint
+      tags:
+      - pengaduan
+  /pengaduan/{id}:
+    get:
+      description: Get a single complaint by its ID
+      parameters:
+      - description: Complaint ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Pengaduan'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a complaint
+      tags:
+      - pengaduan
+  /pengaduan/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update status and keterangan of a pengaduan
+      parameters:
+      - description: Pengaduan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Status and optional Keterangan
+        in: body
+        name: status
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Pengaduan'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update Pengaduan Status
+      tags:
+      - pengaduan
   /bansos:
     get:
       description: Get a list of social assistance records

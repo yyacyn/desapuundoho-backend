@@ -40,11 +40,11 @@ type PengaduanInput struct {
 // Handlers
 // listPengaduanHandler godoc
 // @Summary      List pengaduan
-// @Description  Get a list of submitted complaints. Use ?status=submitted to filter. Leave empty to get all complaints.
+// @Description  Get a list of complaints. Use ?status=Baru, Ditinjau, Diproses, Selesai, or Ditolak to filter. Leave empty to get all complaints.
 // @Tags         pengaduan
 // @Accept       json
 // @Produce      json
-// @Param        status  query     string  false  "Filter by status (submitted/draft)"
+// @Param        status  query     string  false  "Filter by complaint status"
 // @Success      200     {object}  map[string][]Pengaduan
 // @Failure      503     {object}  map[string]string
 // @Router       /pengaduan [get]
@@ -94,6 +94,7 @@ func listPengaduanHandler(c *gin.Context) {
 // @Success      200  {object}  Pengaduan
 // @Failure      400  {object}  map[string]string
 // @Failure      404  {object}  map[string]string
+// @Failure      503  {object}  map[string]string
 // @Router       /pengaduan/{id} [get]
 
 func getPengaduanHandler(c *gin.Context) {
@@ -127,14 +128,14 @@ func getPengaduanHandler(c *gin.Context) {
 
 // createPengaduanHandler godoc
 // @Summary      Create complaint
-// @Description  Create a new complaint
+// @Description  Create a new complaint submission
 // @Tags         pengaduan
 // @Accept       json
 // @Produce      json
-// @Security     ApiKeyAuth
 // @Param        pengaduan  body      PengaduanInput  true  "Complaint Data"
 // @Success      201      {object}  Pengaduan
 // @Failure      400      {object}  map[string]string
+// @Failure      503      {object}  map[string]string
 // @Router       /pengaduan [post]
 
 func createPengaduanHandler(c *gin.Context) {
@@ -181,6 +182,7 @@ func createPengaduanHandler(c *gin.Context) {
 // @Success      200       {object}  Pengaduan
 // @Failure      400       {object}  map[string]string
 // @Failure      404       {object}  map[string]string
+// @Failure      503       {object}  map[string]string
 // @Router       /pengaduan/{id}/status [patch]
 
 func updatePengaduanStatusHandler(c *gin.Context) {
