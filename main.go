@@ -262,7 +262,6 @@ func helloHandler(c *gin.Context) {
 func healthHandler(c *gin.Context) {
 	dbStatus := "disconnected"
 	dbError := ""
-
 	if DB != nil {
 		err := DB.Ping()
 		if err == nil {
@@ -271,13 +270,13 @@ func healthHandler(c *gin.Context) {
 			dbError = err.Error()
 		}
 	}
-
 	c.JSON(200, gin.H{
 		"message": "Backend is running!",
 		"status":  "healthy",
 		"database": gin.H{
 			"status": dbStatus,
 			"error":  dbError,
+			"host":   os.Getenv("DB_HOST"), // Add this to see which DB is being used
 		},
 	})
 }
