@@ -766,462 +766,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/pengaduan": {
-            "get": {
-                "description": "Get a list of complaints. Use ?status=Baru, Ditinjau, Diproses, Selesai, or Ditolak to filter. Leave empty to get all complaints.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengaduan"
-                ],
-                "summary": "List pengaduan",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Filter by complaint status",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/main.Pengaduan"
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new complaint submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengaduan"
-                ],
-                "summary": "Create complaint",
-                "parameters": [
-                    {
-                        "description": "Complaint Data",
-                        "name": "pengaduan",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/main.PengaduanInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengaduan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/pengaduan/{id}": {
-            "get": {
-                "description": "Get a single complaint by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengaduan"
-                ],
-                "summary": "Get a complaint",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Complaint ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengaduan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/pengaduan/{id}/status": {
-            "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Update status and keterangan of a pengaduan",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengaduan"
-                ],
-                "summary": "Update Pengaduan Status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Pengaduan ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Status and optional Keterangan",
-                        "name": "status",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengaduan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/pengajuan": {
-            "get": {
-                "description": "Get a list of requests. Use ?status=Baru, Ditinjau, Disetujui, or Ditolak to filter. Leave empty to get all requests.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengajuan"
-                ],
-                "summary": "List pengajuan",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Filter by request status",
-                        "name": "status",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/main.Pengajuan"
-                                }
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new request submission",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengajuan"
-                ],
-                "summary": "Create request",
-                "parameters": [
-                    {
-                        "description": "Request Data",
-                        "name": "pengajuan",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/main.PengajuanInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengajuan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/pengajuan/{id}": {
-            "get": {
-                "description": "Get a single request by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengajuan"
-                ],
-                "summary": "Get a request",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Request ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengajuan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/pengajuan/{id}/status": {
-            "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Update status and keterangan of a pengajuan",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "pengajuan"
-                ],
-                "summary": "Update Pengajuan Status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Pengajuan ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Status and optional Keterangan",
-                        "name": "status",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.Pengajuan"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "503": {
-                        "description": "Service Unavailable",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/bansos": {
             "get": {
                 "description": "Get a list of social assistance records",
@@ -2633,6 +2177,273 @@ const docTemplate = `{
                 }
             }
         },
+        "/struktur-organisasi": {
+            "get": {
+                "description": "Get a list of struktur organisasi images",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "struktur-organisasi"
+                ],
+                "summary": "List Struktur Organisasi",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/main.StrukturOrganisasi"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new struktur organisasi image record (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "struktur-organisasi"
+                ],
+                "summary": "Create Struktur Organisasi",
+                "parameters": [
+                    {
+                        "description": "Upload Data",
+                        "name": "upload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.StrukturOrganisasiInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/main.StrukturOrganisasi"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/struktur-organisasi/{id}": {
+            "get": {
+                "description": "Get a single struktur organisasi image by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "struktur-organisasi"
+                ],
+                "summary": "Get Struktur Organisasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.StrukturOrganisasi"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing struktur organisasi image record (Admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "struktur-organisasi"
+                ],
+                "summary": "Update Struktur Organisasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Data",
+                        "name": "upload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.StrukturOrganisasiInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.StrukturOrganisasi"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete a struktur organisasi image record by ID (Admin only)",
+                "tags": [
+                    "struktur-organisasi"
+                ],
+                "summary": "Delete Struktur Organisasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/stunting": {
             "get": {
                 "description": "Get a list of stunting data",
@@ -3026,164 +2837,6 @@ const docTemplate = `{
                 }
             }
         },
-        "main.Pengaduan": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "foto_url": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "isi": {
-                    "type": "string"
-                },
-                "judul": {
-                    "type": "string"
-                },
-                "kategori": {
-                    "type": "string"
-                },
-                "keterangan": {
-                    "type": "string"
-                },
-                "lokasi": {
-                    "type": "string"
-                },
-                "nama": {
-                    "type": "string"
-                },
-                "nomor_telp": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "tanggal": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "main.PengaduanInput": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "foto_url": {
-                    "type": "string"
-                },
-                "isi": {
-                    "type": "string"
-                },
-                "judul": {
-                    "type": "string"
-                },
-                "kategori": {
-                    "type": "string"
-                },
-                "lokasi": {
-                    "type": "string"
-                },
-                "nama": {
-                    "type": "string"
-                },
-                "nomor_telp": {
-                    "type": "string"
-                },
-                "tanggal": {
-                    "type": "string"
-                }
-            }
-        },
-        "main.Pengajuan": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "dokumen_url": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "isi": {
-                    "type": "string"
-                },
-                "judul": {
-                    "type": "string"
-                },
-                "kategori": {
-                    "type": "string"
-                },
-                "keterangan": {
-                    "type": "string"
-                },
-                "lokasi": {
-                    "type": "string"
-                },
-                "nama": {
-                    "type": "string"
-                },
-                "nomor_telp": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "tanggal": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "main.PengajuanInput": {
-            "type": "object",
-            "properties": {
-                "dokumen_url": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "isi": {
-                    "type": "string"
-                },
-                "judul": {
-                    "type": "string"
-                },
-                "kategori": {
-                    "type": "string"
-                },
-                "lokasi": {
-                    "type": "string"
-                },
-                "nama": {
-                    "type": "string"
-                },
-                "nomor_telp": {
-                    "type": "string"
-                },
-                "tanggal": {
-                    "type": "string"
-                }
-            }
-        },
         "main.Bansos": {
             "type": "object",
             "properties": {
@@ -3500,6 +3153,40 @@ const docTemplate = `{
                 },
                 "total_desa": {
                     "type": "integer"
+                }
+            }
+        },
+        "main.StrukturOrganisasi": {
+            "type": "object",
+            "properties": {
+                "caption": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.StrukturOrganisasiInput": {
+            "type": "object",
+            "required": [
+                "image_url"
+            ],
+            "properties": {
+                "caption": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
                 }
             }
         },
