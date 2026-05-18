@@ -22,8 +22,17 @@ var jwtSecret []byte
 func initAuth() {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
+		if gin.Mode() == gin.ReleaseMode {
+			log.Println("CRITICAL SECURITY WARNING: JWT_SECRET environment variable is NOT set in production!")
+			log.Println("   Please set JWT_SECRET immediately to secure your application.")
+		}
 		secret = "puundoho-dashboard-secret-key-2026"
 		log.Println("⚠️  JWT_SECRET not set, using default (not safe for production)")
+	} else if secret == "puundoho-dashboard-secret-key-2026" {
+		if gin.Mode() == gin.ReleaseMode {
+			log.Println("CRITICAL SECURITY WARNING: JWT_SECRET is using the default insecure key 'puundoho-dashboard-secret-key-2026' in production mode!")
+			log.Println("   Please change it to a strong unique secret key immediately.")
+		}
 	}
 	jwtSecret = []byte(secret)
 
@@ -207,8 +216,18 @@ func imagekitAuthHandler(c *gin.Context) {
 
 // Seed admin & bendahara
 func seedAdminUser() {
-	hashAdmin, _ := hashPassword("admin123")
-	hashBendahara, _ := hashPassword("bendahara123")
+	adminPass := os.Getenv("SEED_ADMIN_PASSWORD")
+	if adminPass == "" {
+		adminPass = "admin123"
+	}
+	
+	bendaharaPass := os.Getenv("SEED_BENDAHARA_PASSWORD")
+	if bendaharaPass == "" {
+		bendaharaPass = "bendahara123"
+	}
+
+	hashAdmin, _ := hashPassword(adminPass)
+	hashBendahara, _ := hashPassword(bendaharaPass)
 
 	_, err := DB.Exec(`
 		INSERT INTO admin_users (username, password_hash, role) 
@@ -223,5 +242,20 @@ func seedAdminUser() {
 		return
 	}
 	log.Println("✅ Default users created/verified: (admin) & (bendahara)")
+
+	// In production mode, check if the users are still using the default passwords
+	if gin.Mode() == gin.ReleaseMode {
+		var adminHash string
+		err = DB.QueryRow("SELECT password_hash FROM admin_users WHERE username = $1", "admin").Scan(&adminHash)
+		if err == nil && checkPassword(adminHash, "admin123") {
+			log.Println("🚨 SECURITY WARNING: Admin user is still using the default 'admin123' password! Please change it immediately.")
+		}
+
+		var bendaharaHash string
+		err = DB.QueryRow("SELECT password_hash FROM admin_users WHERE username = $1", "bendahara").Scan(&bendaharaHash)
+		if err == nil && checkPassword(bendaharaHash, "bendahara123") {
+			log.Println("🚨 SECURITY WARNING: Bendahara user is still using the default 'bendahara123' password! Please change it immediately.")
+		}
+	}
 }
 

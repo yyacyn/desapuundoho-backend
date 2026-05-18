@@ -34,6 +34,11 @@ import (
 // @description                 Paste your token with "Bearer " prefix (e.g. "Bearer <token>")
 
 func main() {
+	// Set Gin mode (release for production)
+	if os.Getenv("GIN_MODE") == "" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	// Initialize database connection
 	log.Println("Initializing database connection...")
 	if err := InitDB(); err != nil {
@@ -44,11 +49,6 @@ func main() {
 
 	// Initialize auth (JWT secret + seed admin user)
 	initAuth()
-
-	// Set Gin mode (release for production)
-	if os.Getenv("GIN_MODE") == "" {
-		gin.SetMode(gin.ReleaseMode)
-	}
 
 	// Create Gin router
 	router := gin.Default()
