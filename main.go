@@ -103,7 +103,6 @@ func main() {
 
 		// Public Resident Data (for graphs & village profile)
 		api.GET("/penduduk/datasets", listDatasetsHandler)
-		api.GET("/penduduk/datasets/:id/records", listPendudukByDatasetHandler)
 		api.GET("/penduduk/datasets/:id/stats", getPendudukStatsHandler)
 
 		// Public SDG Data from Kemendesa
@@ -178,6 +177,7 @@ func main() {
 			adminOnly.POST("/penduduk/datasets", createDatasetHandler)
 			adminOnly.DELETE("/penduduk/datasets/:id", deleteDatasetHandler)
 			adminOnly.PATCH("/penduduk/records/:id", patchPendudukHandler)
+			adminOnly.GET("/penduduk/datasets/:id/records", listPendudukByDatasetHandler)
 			adminOnly.POST("/penduduk/datasets/:id/bulk", bulkCreatePendudukHandler)
 			adminOnly.DELETE("/penduduk/records/:id", deleteRecordHandler)
 
@@ -231,19 +231,6 @@ func main() {
 
 	// Start server
 	log.Printf("🚀 Server starting on port %s", port)
-	log.Printf("📍 Public endpoints:")
-	log.Printf("   - POST http://localhost:%s/api/auth/login", port)
-	log.Printf("   - GET  http://localhost:%s/api/articles", port)
-	log.Printf("   - GET  http://localhost:%s/api/listings", port)
-	log.Printf("   - GET  http://localhost:%s/api/galeri", port)
-	log.Printf("   - GET  http://localhost:%s/api/struktur-organisasi", port)
-	log.Printf("📍 Protected endpoints (JWT required):")
-	log.Printf("   - GET  http://localhost:%s/api/auth/me", port)
-	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/articles", port)
-	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/listings", port)
-	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/galeri", port)
-	log.Printf("   - POST/PUT/DELETE http://localhost:%s/api/struktur-organisasi", port)
-	log.Printf("   - GET  http://localhost:%s/api/imagekit/auth", port)
 
 	if err := router.Run(":" + port); err != nil {
 		log.Fatal(err)

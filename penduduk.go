@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -171,90 +172,229 @@ func listPendudukByDatasetHandler(c *gin.Context) {
 func getPendudukStatsHandler(c *gin.Context) {
 	datasetID := c.Param("id")
 
-	stats := gin.H{
-		"gender":            make(map[string]int),
-		"religion":          make(map[string]int),
-		"education":         make(map[string]int),
-		"job":               make(map[string]int),
-		"marriage":          make(map[string]int),
-		"dusun":             make(map[string]int),
-		"age_range":         make(map[string]int),
-		"gender_by_dusun":   make(map[string]map[string]int),
-		"religion_by_dusun": make(map[string]map[string]int),
-		"age_by_dusun":      make(map[string]map[string]int),
+	rows, err := DB.Query(`
+		SELECT id, jenis_kelamin, tanggal_lahir, agama, pend_terakhir, pekerjaan, alamat, COALESCE(no_kk, ''), COALESCE(nik, ''), COALESCE(status_kawin, '')
+		FROM penduduk WHERE dataset_id = $1`, datasetID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	type TempPenduduk struct {
+		ID           int
+		JenisKelamin string
+		TanggalLahir string
+		Agama        string
+		PendTerakhir string
+		Pekerjaan    string
+		Alamat       string
+		NoKK         string
+		NIK          string
+		StatusKawin  string
 	}
 
-	// Helper to run group by counts with normalization
-	runQuery := func(field string, category string, target map[string]int, targetByDusun map[string]map[string]int) {
-		query := fmt.Sprintf("SELECT COALESCE(%s, 'Tidak Diketahui'), COALESCE(alamat, 'Tidak Diketahui'), COUNT(*) FROM penduduk WHERE dataset_id = $1 GROUP BY %s, alamat", field, field)
-		rows, err := DB.Query(query, datasetID)
+	var list []TempPenduduk
+	for rows.Next() {
+		var p TempPenduduk
+		if err := rows.Scan(&p.ID, &p.JenisKelamin, &p.TanggalLahir, &p.Agama, &p.PendTerakhir, &p.Pekerjaan, &p.Alamat, &p.NoKK, &p.NIK, &p.StatusKawin); err == nil {
+			list = append(list, p)
+		}
+	}
+
+	// 1. Base maps for Overview dashboard page compatibility
+	genderMap := make(map[string]int)
+	religionMap := make(map[string]int)
+	educationMap := make(map[string]int)
+	jobMap := make(map[string]int)
+	marriageMap := make(map[string]int)
+	dusunMap := make(map[string]int)
+	ageRangeMap := make(map[string]int)
+	genderByDusun := make(map[string]map[string]int)
+	religionByDusun := make(map[string]map[string]int)
+	ageByDusun := make(map[string]map[string]int)
+
+	var perempuanCount int
+	var lakiLakiCount int
+
+	for _, p := range list {
+		cleanJK := normalizeStatValue("gender", p.JenisKelamin)
+		cleanAgama := normalizeStatValue("religion", p.Agama)
+		cleanPend := normalizeStatValue("education", p.PendTerakhir)
+		cleanPek := normalizeStatValue("job", p.Pekerjaan)
+		cleanKawin := normalizeStatValue("marriage", p.StatusKawin)
+		cleanDusun := normalizeStatValue("dusun", p.Alamat)
+
+		if cleanJK == "Perempuan" {
+			perempuanCount++
+		} else if cleanJK == "Laki-laki" {
+			lakiLakiCount++
+		}
+
+		var ageRangeKey string
+		t, err := parseBirthDate(p.TanggalLahir)
 		if err == nil {
-			defer rows.Close()
-			for rows.Next() {
-				var key string
-				var dusunRaw string
-				var count int
-				if err := rows.Scan(&key, &dusunRaw, &count); err == nil {
-					// Normalize the key before adding to target
-					cleanKey := normalizeStatValue(category, key)
-					cleanDusun := normalizeStatValue("dusun", dusunRaw)
-                    
-					target[cleanKey] += count
-                    
-					if targetByDusun != nil {
-						if targetByDusun[cleanKey] == nil {
-							targetByDusun[cleanKey] = make(map[string]int)
-						}
-						targetByDusun[cleanKey][cleanDusun] += count
-					}
-				}
+			age := calculateAgeAtYear(t, time.Now().Year())
+			if age <= 5 {
+				ageRangeKey = "0-5"
+			} else if age <= 12 {
+				ageRangeKey = "6-12"
+			} else if age <= 17 {
+				ageRangeKey = "13-17"
+			} else if age <= 59 {
+				ageRangeKey = "18-59"
+			} else {
+				ageRangeKey = "60+"
+			}
+		} else {
+			ageRangeKey = "Tidak Diketahui"
+		}
+
+		genderMap[cleanJK]++
+		religionMap[cleanAgama]++
+		educationMap[cleanPend]++
+		jobMap[cleanPek]++
+		marriageMap[cleanKawin]++
+		dusunMap[cleanDusun]++
+		ageRangeMap[ageRangeKey]++
+
+		if genderByDusun[cleanJK] == nil {
+			genderByDusun[cleanJK] = make(map[string]int)
+		}
+		genderByDusun[cleanJK][cleanDusun]++
+
+		if religionByDusun[cleanAgama] == nil {
+			religionByDusun[cleanAgama] = make(map[string]int)
+		}
+		religionByDusun[cleanAgama][cleanDusun]++
+
+		if ageByDusun[ageRangeKey] == nil {
+			ageByDusun[ageRangeKey] = make(map[string]int)
+		}
+		ageByDusun[ageRangeKey][cleanDusun]++
+	}
+
+	// 2. Pre-aggregations for public frontend charts
+	uniqueKKs := make(map[string]bool)
+	for _, p := range list {
+		key := strings.TrimSpace(p.NoKK)
+		if key == "" {
+			key = strings.TrimSpace(p.NIK)
+		}
+		if key == "" {
+			key = fmt.Sprintf("%d", p.ID)
+		}
+		uniqueKKs[key] = true
+	}
+	kepalaKeluargaCount := len(uniqueKKs)
+
+	ageBuckets := []string{"0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75+"}
+	pyramidMap := make(map[string]map[string]int)
+	for _, b := range ageBuckets {
+		pyramidMap[b] = map[string]int{"lakiLaki": 0, "perempuan": 0}
+	}
+
+	for _, p := range list {
+		t, err := parseBirthDate(p.TanggalLahir)
+		if err == nil {
+			age := calculateAgeAtYear(t, time.Now().Year())
+			bucket := getAgeBucket(age)
+			cleanJK := normalizeStatValue("gender", p.JenisKelamin)
+			if cleanJK == "Perempuan" {
+				pyramidMap[bucket]["perempuan"]++
+			} else if cleanJK == "Laki-laki" {
+				pyramidMap[bucket]["lakiLaki"]++
 			}
 		}
 	}
 
-	runQuery("jenis_kelamin", "gender", stats["gender"].(map[string]int), stats["gender_by_dusun"].(map[string]map[string]int))
-	runQuery("agama", "religion", stats["religion"].(map[string]int), stats["religion_by_dusun"].(map[string]map[string]int))
-	runQuery("pend_terakhir", "education", stats["education"].(map[string]int), nil)
-	runQuery("pekerjaan", "job", stats["job"].(map[string]int), nil)
-	runQuery("status_kawin", "marriage", stats["marriage"].(map[string]int), nil)
-	runQuery("alamat", "dusun", stats["dusun"].(map[string]int), nil)
-
-	// Age Range Calculation
-	ageRows, err := DB.Query(`
-		SELECT 
-			CASE 
-				WHEN DATE_PART('year', AGE(tanggal_lahir)) <= 5 THEN '0-5'
-				WHEN DATE_PART('year', AGE(tanggal_lahir)) <= 12 THEN '6-12'
-				WHEN DATE_PART('year', AGE(tanggal_lahir)) <= 17 THEN '13-17'
-				WHEN DATE_PART('year', AGE(tanggal_lahir)) <= 59 THEN '18-59'
-				ELSE '60+'
-			END as range,
-            COALESCE(alamat, 'Tidak Diketahui'),
-			COUNT(*) 
-		FROM penduduk WHERE dataset_id = $1 GROUP BY range, alamat`, datasetID)
-
-	if err == nil {
-		defer ageRows.Close()
-		target := stats["age_range"].(map[string]int)
-		targetByDusun := stats["age_by_dusun"].(map[string]map[string]int)
-        
-		for ageRows.Next() {
-			var rangeKey string
-			var dusunRaw string
-			var count int
-			if err := ageRows.Scan(&rangeKey, &dusunRaw, &count); err == nil {
-				target[rangeKey] += count
-                
-				cleanDusun := normalizeStatValue("dusun", dusunRaw)
-				if targetByDusun[rangeKey] == nil {
-					targetByDusun[rangeKey] = make(map[string]int)
-				}
-				targetByDusun[rangeKey][cleanDusun] += count
-			}
-		}
+	var agePyramidList []gin.H
+	for _, b := range ageBuckets {
+		agePyramidList = append(agePyramidList, gin.H{
+			"usia":      b,
+			"lakiLaki":  pyramidMap[b]["lakiLaki"],
+			"perempuan": pyramidMap[b]["perempuan"],
+		})
 	}
 
-	c.JSON(http.StatusOK, stats)
+	var dusunList []gin.H
+	for name, count := range dusunMap {
+		dusunList = append(dusunList, gin.H{
+			"name":       name,
+			"population": count,
+		})
+	}
+
+	educationBuckets := []string{"Belum/Tidak Sekolah", "SD Sederajat", "SMP Sederajat", "SMA Sederajat", "D3", "D4", "S1", "Lainnya", "Tidak Diketahui"}
+	var pendidikanList []gin.H
+	for _, b := range educationBuckets {
+		pendidikanList = append(pendidikanList, gin.H{
+			"name":  b,
+			"value": educationMap[b],
+		})
+	}
+
+	jobBuckets := []string{"Belum/Tidak Bekerja", "IRT", "Pelajar/Mahasiswa", "Petani", "Wiraswasta", "ASN/TNI/POLRI", "Perangkat Desa", "Pensiunan", "Tukang", "Sopir", "Honorer", "Karyawan", "Lainnya"}
+	var pekerjaanList []gin.H
+	for _, b := range jobBuckets {
+		pekerjaanList = append(pekerjaanList, gin.H{
+			"name":  b,
+			"value": jobMap[b],
+		})
+	}
+
+	religionBuckets := []string{"Islam", "Kristen", "Katolik", "Hindu", "Budha", "Konghucu", "Tidak Diketahui"}
+	var religionList []gin.H
+	for _, b := range religionBuckets {
+		religionList = append(religionList, gin.H{
+			"name":  b,
+			"value": religionMap[b],
+		})
+	}
+
+	currentYear := time.Now().Year()
+	forecastYears := []int{currentYear, currentYear + 1, currentYear + 5}
+	var wajibPilihList []gin.H
+	for _, yr := range forecastYears {
+		count := 0
+		for _, p := range list {
+			t, err := parseBirthDate(p.TanggalLahir)
+			if err == nil {
+				age := calculateAgeAtYear(t, yr)
+				if age >= 17 {
+					count++
+				}
+			}
+		}
+		wajibPilihList = append(wajibPilihList, gin.H{
+			"year":  fmt.Sprintf("%d", yr),
+			"value": count,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"gender":            genderMap,
+		"religion":          religionMap,
+		"education":         educationMap,
+		"job":               jobMap,
+		"marriage":          marriageMap,
+		"dusun":             dusunMap,
+		"age_range":         ageRangeMap,
+		"gender_by_dusun":   genderByDusun,
+		"religion_by_dusun": religionByDusun,
+		"age_by_dusun":      ageByDusun,
+
+		"total_penduduk":  len(list),
+		"kepala_keluarga": kepalaKeluargaCount,
+		"perempuan":       perempuanCount,
+		"laki_laki":       lakiLakiCount,
+		"age_pyramid":     agePyramidList,
+		"dusun_list":       dusunList,
+		"pendidikan":      pendidikanList,
+		"pekerjaan":       pekerjaanList,
+		"agama":           religionList,
+		"wajib_pilih":     wajibPilihList,
+	})
 }
 
 // PatchPendudukHandler handles inline cell updates (Excel-like)
@@ -457,29 +597,29 @@ func normalizeStatValue(category string, value string) string {
 
 	case "job":
 		// Specific broad categories first
-		if strings.Contains(val, "tani") || strings.Contains(val, "peta") || strings.Contains(val, "petn") || 
+		if strings.Contains(val, "tani") || strings.Contains(val, "peta") || strings.Contains(val, "petn") ||
 			strings.Contains(val, "petr") || strings.Contains(val, "peten") {
 			return "Petani"
 		}
 		if strings.Contains(val, "wasta") || strings.Contains(val, "wiras") {
 			return "Wiraswasta"
 		}
-		if strings.Contains(val, "pns") || strings.Contains(val, "p3k") || strings.Contains(val, "abri") || 
+		if strings.Contains(val, "pns") || strings.Contains(val, "p3k") || strings.Contains(val, "abri") ||
 			strings.Contains(val, "polri") || strings.Contains(val, "asn") {
 			return "ASN/TNI/POLRI"
 		}
 		if strings.Contains(val, "irt") || strings.Contains(val, "rumah tangga") {
 			return "IRT"
 		}
-		if strings.Contains(val, "pelaj") || strings.Contains(val, "pelej") || strings.Contains(val, "peljar") || 
+		if strings.Contains(val, "pelaj") || strings.Contains(val, "pelej") || strings.Contains(val, "peljar") ||
 			strings.Contains(val, "mahasiswa") || strings.Contains(val, "mahasiswi") || strings.Contains(val, "mahaisiswi") {
 			return "Pelajar/Mahasiswa"
 		}
-		if strings.Contains(val, "blm") || strings.Contains(val, "tdk") || strings.Contains(val, "tidak") || 
+		if strings.Contains(val, "blm") || strings.Contains(val, "tdk") || strings.Contains(val, "tidak") ||
 			strings.Contains(val, "belum") || strings.Contains(val, "kerja") {
 			return "Belum/Tidak Bekerja"
 		}
-		
+
 		// Specific roles
 		if strings.Contains(val, "desa") {
 			return "Perangkat Desa"
@@ -555,3 +695,86 @@ func normalizeStatValue(category string, value string) string {
 	}
 	return "Tidak Diketahui"
 }
+
+func parseBirthDate(tgl string) (time.Time, error) {
+	tgl = strings.TrimSpace(tgl)
+	formats := []string{
+		"2006-01-02T15:04:05Z",
+		"2006-01-02T15:04:05-07:00",
+		"2006-01-02 15:04:05",
+		"2006-01-02",
+		time.RFC3339,
+	}
+	for _, f := range formats {
+		t, err := time.Parse(f, tgl)
+		if err == nil {
+			return t, nil
+		}
+	}
+	if strings.Contains(tgl, "T") {
+		parts := strings.Split(tgl, "T")
+		t, err := time.Parse("2006-01-02", parts[0])
+		if err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("invalid date")
+}
+
+func calculateAgeAtYear(birthDate time.Time, year int) int {
+	age := year - birthDate.Year()
+	if age < 0 {
+		return 0
+	}
+	return age
+}
+
+func getAgeBucket(age int) string {
+	if age <= 4 {
+		return "0-4"
+	}
+	if age <= 9 {
+		return "5-9"
+	}
+	if age <= 14 {
+		return "10-14"
+	}
+	if age <= 19 {
+		return "15-19"
+	}
+	if age <= 24 {
+		return "20-24"
+	}
+	if age <= 29 {
+		return "25-29"
+	}
+	if age <= 34 {
+		return "30-34"
+	}
+	if age <= 39 {
+		return "35-39"
+	}
+	if age <= 44 {
+		return "40-44"
+	}
+	if age <= 49 {
+		return "45-49"
+	}
+	if age <= 54 {
+		return "50-54"
+	}
+	if age <= 59 {
+		return "55-59"
+	}
+	if age <= 64 {
+		return "60-64"
+	}
+	if age <= 69 {
+		return "65-69"
+	}
+	if age <= 74 {
+		return "70-74"
+	}
+	return "75+"
+}
+

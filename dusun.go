@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -105,7 +106,12 @@ func createDusunHandler(c *gin.Context) {
 // @Failure      404    {object}  map[string]string
 // @Router       /dusun/{id} [put]
 func updateDusunHandler(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 	var input struct {
 		NamaDusun   string `json:"nama_dusun" binding:"required"`
 		Warna       string `json:"warna" binding:"required"`
@@ -119,7 +125,7 @@ func updateDusunHandler(c *gin.Context) {
 
 	var updatedId int
 	var createdAt string
-	err := DB.QueryRow(
+	err = DB.QueryRow(
 		"UPDATE dusun_boundaries SET nama_dusun = $1, warna = $2, geojson_data = $3::jsonb, updated_at = NOW() WHERE id = $4 RETURNING id, created_at",
 		input.NamaDusun, input.Warna, input.GeojsonData, id,
 	).Scan(&updatedId, &createdAt)
@@ -128,7 +134,7 @@ func updateDusunHandler(c *gin.Context) {
 		if err == sql.ErrNoRows {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Dusun not found"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update dusun"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update dusun: " + err.Error()})
 		}
 		return
 	}
@@ -152,10 +158,15 @@ func updateDusunHandler(c *gin.Context) {
 // @Failure      404  {object}  map[string]string
 // @Router       /dusun/{id} [delete]
 func deleteDusunHandler(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 	res, err := DB.Exec("DELETE FROM dusun_boundaries WHERE id = $1", id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete dusun"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete dusun: " + err.Error()})
 		return
 	}
 	affected, _ := res.RowsAffected()
